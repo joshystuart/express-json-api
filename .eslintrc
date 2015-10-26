@@ -1,0 +1,6 @@
+{
+    "extends": "etaskr",
+    "rules": {
+        "no-var": 0
+    }
+}
