@@ -1,11 +1,12 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-var _ = require('lodash');
-var express = require('express');
-var router = express.Router(); // eslint-disable-line new-cap
-var get = require('./controllers/get');
-var getList = require('./controllers/get-list');
+const _ = require('lodash');
+const express = require('express');
+const router = express.Router(); // eslint-disable-line new-cap
+const get = require('./controllers/get');
+const getList = require('./controllers/get-list');
+const patch = require('./controllers/patch');
 
 /**
  * Sets the model on the request so that other middleware can use it.
@@ -14,8 +15,10 @@ var getList = require('./controllers/get-list');
  * @param req
  */
 function applyRouteConfig(route, req, res) {
-    req.target = route.model;
-    res.limit = route.limit;
+    req.id = route.id;
+    res.locals.target = route.model;
+    res.locals.mapper = route.mapper;
+    res.locals.limit = route.limit;
 }
 
 function createGetListRoute(route, middleware) {
@@ -53,13 +56,13 @@ function createRoute(app, route) {
             // defaults
             switch (method) {
                 case 'get':
-                    createGetRoute(route, getList.get);
+                    createGetRoute(route, get.default);
                     break;
                 case 'getList':
                     createGetListRoute(route, getList.default);
                     break;
                 case 'patch':
-                    createPatchRoute(route, getList.default);
+                    createPatchRoute(route, patch.default);
                     break;
                 default:
                     break;

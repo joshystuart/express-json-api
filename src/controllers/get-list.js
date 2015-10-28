@@ -1,16 +1,16 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-var _ = require('lodash');
+const _ = require('lodash');
 
 function targetModelNotFoundException(next) {
-    var err = new Error('Target Model Not Found');
+    const err = new Error('Target Model Not Found');
     err.status = 500;
     next(err);
 }
 
 function queryNotFoundException(next) {
-    var err = new Error('Query Not Found');
+    const err = new Error('Query Not Found');
     err.status = 500;
     next(err);
 }
@@ -25,9 +25,9 @@ function query(req, res, next) {
 }
 
 function filter(req, res, next) {
-    var model = req.target;
-    var resQuery = res.query;
-    var schema;
+    const model = req.target;
+    const resQuery = res.query;
+    let schema;
 
     if (!!model && !!model.schema) {
         schema = model.schema;
@@ -46,10 +46,10 @@ function filter(req, res, next) {
 }
 
 function sort(req, res, next) {
-    var model = req.target;
-    var resQuery = res.query;
-    var schema;
-    var sorts;
+    const model = req.target;
+    const resQuery = res.query;
+    let schema;
+    let sorts;
 
     if (!!model && !!model.schema) {
         schema = model.schema;
@@ -59,7 +59,7 @@ function sort(req, res, next) {
 
             _.forEach(sorts, function(sortItem) {
                 // remove the descending term to find if the property exists on the model/schema.
-                var field = _.trimLeft(sortItem, '-');
+                const field = _.trimLeft(sortItem, '-');
                 if (!!schema.path(field)) {
                     resQuery.sort(sortItem);
                 }
@@ -72,7 +72,7 @@ function sort(req, res, next) {
 }
 
 function page(req, res, next) {
-    var resQuery = res.query;
+    const resQuery = res.query;
 
     if (!!resQuery) {
         if (!req.query.page) {
@@ -108,7 +108,7 @@ function page(req, res, next) {
 }
 
 function execute(req, res, next) {
-    var resQuery = res.query;
+    const resQuery = res.query;
 
     if (!!resQuery) {
         resQuery.lean();
@@ -127,7 +127,7 @@ function execute(req, res, next) {
 
 function serialize(req, res, next) {
     // run the data through any serializers or data mappers
-    var results = res.results;
+    const results = res.results;
 
     if (!!results) {
         // TODO: serialize

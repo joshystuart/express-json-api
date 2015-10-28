@@ -40,3 +40,4 @@ tmp
 # IDE metadata
 *.iml
 .idea
+xunit.xml
