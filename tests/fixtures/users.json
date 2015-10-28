@@ -1,0 +1,13 @@
+[
+    {
+        "_id": "562f20dae5170edf1ca31b0f",
+        "username": "user01",
+        "first-name": "Firs 1",
+        "last-name": "Last 1"
+    },
+    {
+        "username": "user02",
+        "first-name": "First 2",
+        "last-name": "Last 2"
+    }
+]
