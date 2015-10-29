@@ -8,12 +8,12 @@
     "url": "https://github.com/crimsonronin/express-json-api.git"
   },
   "scripts": {
-    "lint": "./node_modules/.bin/eslint ./src ./test",
+    "lint": "./node_modules/.bin/eslint ./src ./tests",
     "start": "./node_modules/nodemon/bin/nodemon.js index.js",
-    "unit-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir shippable/codecoverage/unit ./node_modules/.bin/_mocha ./tests/unit -- --recursive --reporter spec-xunit-file -r should",
-    "integration-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir shippable/codecoverage/integration ./node_modules/.bin/_mocha ./tests/integration -- --recursive --reporter spec-xunit-file -r should",
+    "unit-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage/unit ./node_modules/.bin/_mocha ./tests/unit -- --recursive --reporter spec-xunit-file -r should",
+    "integration-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage/integration ./node_modules/.bin/_mocha ./tests/integration -- --recursive --reporter spec-xunit-file -r should",
     "pretest": "npm run-script lint",
-    "test": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir shippable/codecoverage ./node_modules/.bin/_mocha ./tests -- --recursive --reporter spec-xunit-file -r should"
+    "test": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage ./node_modules/.bin/_mocha ./tests/unit ./tests/integration -- --recursive --reporter spec-xunit-file -r should"
   },
   "dependencies": {
     "body-parser": "^1.13.3",

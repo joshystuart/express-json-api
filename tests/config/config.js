@@ -1,9 +1,9 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-var path = require('path');
-var env = process.env.NODE_ENV || 'development';
-var config = require('./env/' + env);
+const path = require('path');
+const env = process.env.NODE_ENV || 'test';
+const config = require('./env/' + env);
 
 config.root = path.normalize(__dirname + '/..');
 

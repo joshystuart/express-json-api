@@ -1,13 +1,14 @@
 [
     {
         "_id": "562f20dae5170edf1ca31b0f",
-        "username": "user01",
-        "first-name": "Firs 1",
-        "last-name": "Last 1"
+        "username": "neilastronaut",
+        "first-name": "Neil",
+        "last-name": "Armstrong"
     },
     {
-        "username": "user02",
-        "first-name": "First 2",
-        "last-name": "Last 2"
+        "_id": "563032c37b150fa861740028",
+        "username": "ladyada",
+        "first-name": "Ada",
+        "last-name": "Lovelace"
     }
 ]

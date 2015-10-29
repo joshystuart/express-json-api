@@ -1,17 +1,15 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-var _ = require('lodash');
-
 function targetModelNotFoundException(next) {
-    var err = new Error('Target Model Not Found');
+    const err = new Error('Target Model Not Found');
     err.status = 500;
     next(err);
 }
 
 function query(req, res, next) {
-    var criteria = {};
-    var err;
+    const criteria = {};
+    let err;
 
     if (!!req.target) {
         if (!!req.id && !!req.params[req.id]) {
@@ -29,12 +27,12 @@ function query(req, res, next) {
 }
 
 function execute(req, res, next) {
-    var resQuery = res.query;
+    const resQuery = res.query;
 
     if (!!resQuery) {
         resQuery.lean();
         resQuery.exec('findOne', function(err, results) {
-            var noResults;
+            let noResults;
 
             if (err) {
                 next(err);
@@ -54,7 +52,7 @@ function execute(req, res, next) {
 
 function serialize(req, res, next) {
     // run the data through any serializers or data mappers
-    var results = res.results;
+    const results = res.results;
 
     if (!!results) {
         // TODO: serialize

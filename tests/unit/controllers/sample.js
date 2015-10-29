@@ -1,13 +1,9 @@
 require('babel/register');
-const should = require('should');
-const sinon = require('sinon');
-const ObjectID = require('mongodb').ObjectID;
 const db = require('../../utils/db');
-const User = require('../../../src/models/user');
+const User = require('../../models/user');
 const users = require('../../fixtures/users.json');
 
-describe('Unit - Controllers - Sample', function() {
-
+xdescribe('Unit - Controllers - Sample', function() {
     before(function(done) {
         db.connect().
             then(function() {
@@ -23,10 +19,9 @@ describe('Unit - Controllers - Sample', function() {
             then(function() {
                 db.disconnect();
                 done();
-            })
+            });
     });
 
-    // tests 
     it('sample test', function(done) {
         done();
     });
