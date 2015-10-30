@@ -1,44 +1,43 @@
 {
-  "name": "express-json-api",
-  "description": "",
-  "version": "0.0.1",
-  "author": "Josh Stuart <joshstuartx@gmail.com>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/crimsonronin/express-json-api.git"
-  },
-  "scripts": {
-    "lint": "./node_modules/.bin/eslint ./src ./tests",
-    "start": "./node_modules/nodemon/bin/nodemon.js index.js",
-    "unit-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage/unit ./node_modules/.bin/_mocha ./tests/unit -- --recursive --reporter spec-xunit-file -r should",
-    "integration-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage/integration ./node_modules/.bin/_mocha ./tests/integration -- --recursive --reporter spec-xunit-file -r should",
-    "pretest": "npm run-script lint",
-    "test": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage ./node_modules/.bin/_mocha ./tests/unit ./tests/integration -- --recursive --reporter spec-xunit-file -r should"
-  },
-  "dependencies": {
-    "body-parser": "^1.13.3",
-    "compression": "^1.5.2",
-    "cookie-parser": "^1.3.3",
-    "express": "^4.13.3",
-    "lodash": "^3.10.1",
-    "method-override": "^2.3.0",
-    "moment": "^2.10.6",
-    "mongoose": "^4.1.2",
-    "morgan": "^1.6.1",
-    "q": "^1.4.1",
-    "winston": "^1.0.1"
-  },
-  "devDependencies": {
-    "babel": "^5.8.29",
-    "babel-eslint": "^4.1.3",
-    "eslint": "^1.5.0",
-    "eslint-config-etaskr": "git+https://bitbucket.org/etaskr/eslint-config-etaskr.git",
-    "istanbul": "^0.3.20",
-    "mocha": "^2.3.2",
-    "nodemon": "^1.7.3",
-    "should": "^7.1.0",
-    "sinon": "^1.16.1",
-    "spec-xunit-file": "0.0.1-3",
-    "supertest": "^1.1.0"
-  }
+    "name": "express-json-api",
+    "description": "",
+    "version": "0.0.1",
+    "author": "Josh Stuart <joshstuartx@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/crimsonronin/express-json-api.git"
+    },
+    "scripts": {
+        "lint": "./node_modules/.bin/eslint ./src ./tests",
+        "start": "./node_modules/nodemon/bin/nodemon.js index.js",
+        "unit-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage/unit ./node_modules/.bin/_mocha ./tests/unit -- --recursive --reporter spec-xunit-file -r should",
+        "integration-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage/integration ./node_modules/.bin/_mocha ./tests/integration -- --recursive --reporter spec-xunit-file -r should",
+        "pretest": "npm run-script lint",
+        "test": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage ./node_modules/.bin/_mocha ./tests/unit ./tests/integration -- --recursive --reporter spec-xunit-file -r should"
+    },
+    "dependencies": {
+        "babel": "^5.8.29",
+        "express": "^4.0.0",
+        "lodash": "^3.10.1",
+        "mongoose": "^4.1.2",
+        "q": "^1.4.1",
+        "winston": "^1.0.1"
+    },
+    "devDependencies": {
+        "babel-eslint": "^4.1.3",
+        "body-parser": "^1.13.3",
+        "compression": "^1.5.2",
+        "cookie-parser": "^1.3.3",
+        "eslint": "^1.5.0",
+        "eslint-config-etaskr": "git+https://bitbucket.org/etaskr/eslint-config-etaskr.git",
+        "istanbul": "^0.3.20",
+        "method-override": "^2.3.0",
+        "mocha": "^2.3.2",
+        "moment": "^2.10.6",
+        "nodemon": "^1.7.3",
+        "should": "^7.1.0",
+        "sinon": "^1.16.1",
+        "spec-xunit-file": "0.0.1-3",
+        "supertest": "^1.1.0"
+    }
 }

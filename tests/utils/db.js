@@ -6,7 +6,7 @@ const q = require('q');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const config = require('../config/config');
-const logger = require('./logger');
+const logger = require('../../src/utils/logger');
 
 /**
  * A DB util class that abstracts mongoose functions.

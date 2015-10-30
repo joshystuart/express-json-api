@@ -5,35 +5,46 @@ const request = require('supertest');
 const db = require('../../utils/db');
 const users = require('../../fixtures/users.json');
 const User = require('../../models/user');
+const logger = require('../../../src/utils/logger');
 
 describe('Integration - Controllers - Patch', function() {
     before(function(done) {
         db.connect().
             then(function() {
-                db.import(User, users);
+                return db.import(User, users);
             }).
             then(function() {
-                app.init();
+                return app.init();
             }).
             then(function() {
                 done();
+            }).
+            fail(function(err) {
+                logger.error(err);
             });
     });
 
     after(function(done) {
         db.removeAll(User).
             then(function() {
-                db.disconnect();
+                return app.stop();
+            }).
+            then(function() {
+                return db.disconnect();
+            }).
+            then(function() {
                 done();
+            }).
+            fail(function(err) {
+                logger.error(err);
             });
     });
 
-    it('patch request should update existing database record', function(done) {
-        const id = users[0]._id;
+    it('should update an existing database record', function(done) {
+        const id = users[4]._id;
         const updates = {
-            'data': {
-                'id': '563032c37b150fa861740028',
-                'attributes': {
+            data: {
+                attributes: {
                     'last-name': 'Lovegood'
                 }
             }
@@ -51,12 +62,11 @@ describe('Integration - Controllers - Patch', function() {
             expect(200, done);
     });
 
-    it('patch request should return HTTP 404 on non-existing record', function(done) {
-        const id = users[0]._id;
+    it('should return http 404 when updating a missing record', function(done) {
+        const id = '5630743e2446a0672a4ee793';
         const updates = {
-            'data': {
-                'id': '5630743e2446a0672a4ee793',
-                'attributes': {
+            data: {
+                attributes: {
                     'last-name': 'this should fail'
                 }
             }
@@ -69,27 +79,12 @@ describe('Integration - Controllers - Patch', function() {
             expect(404, done);
     });
 
-    it('patch request should return HTTP 400 if `attributes` is missing', function(done) {
+    it('should return http 400 if `attributes` are missing', function(done) {
         const id = users[0]._id;
         const updates = {
-            'data': {
-                'id': '563032c37b150fa86174002A'
-            }
-        };
-
-        request(app.getExpressApplication()).
-            patch('/users/' + id).
-            set('Content-Type', 'application/json').
-            send(updates).
-            expect(400, done);
-    });
-
-    it('patch request should return HTTP 400 if `id` is missing', function(done) {
-        const id = users[0]._id;
-        const updates = {
-            'data': {
-                'attributes': {
-                    'last-name': 'this should fail'
+            data: {
+                meta: {
+                    stuff: 'this should fail'
                 }
             }
         };
