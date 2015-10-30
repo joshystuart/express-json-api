@@ -44,6 +44,7 @@ describe('Integration - Controllers - Patch', function() {
         const id = users[4]._id;
         const updates = {
             data: {
+                id: id,
                 attributes: {
                     'last-name': 'Lovegood'
                 }
@@ -66,6 +67,7 @@ describe('Integration - Controllers - Patch', function() {
         const id = '5630743e2446a0672a4ee793';
         const updates = {
             data: {
+                id: id,
                 attributes: {
                     'last-name': 'this should fail'
                 }
@@ -80,6 +82,24 @@ describe('Integration - Controllers - Patch', function() {
     });
 
     it('should return http 400 if `attributes` are missing', function(done) {
+        const id = users[0]._id;
+        const updates = {
+            data: {
+                id: id,
+                meta: {
+                    stuff: 'this should fail'
+                }
+            }
+        };
+
+        request(app.getExpressApplication()).
+            patch('/users/' + id).
+            set('Content-Type', 'application/json').
+            send(updates).
+            expect(400, done);
+    });
+
+    it('should return http 400 if `id` is missing', function(done) {
         const id = users[0]._id;
         const updates = {
             data: {
