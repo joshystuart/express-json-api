@@ -15,7 +15,7 @@ function recordNotFoundException(next) {
 function validate(req, res, next) {
     // TODO add check for req.body.type as per jsonapi.org requirements.
 
-    if (!!req.body.data && !!req.body.data.attributes) {
+    if (!!req.body.data && !!req.body.data.id && !!req.body.data.attributes) {
         next();
     } else {
         const err = new Error('Request failed validation');

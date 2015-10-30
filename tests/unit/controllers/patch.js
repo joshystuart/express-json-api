@@ -40,7 +40,10 @@ describe('Unit - Controllers - Patch', function() {
         const next = sinon.spy();
 
         patchController.validate(req, res, next);
+        const calledWithoutErrors = next.calledWith();
+
         next.calledOnce.should.be.equal(true);
+        calledWithoutErrors.should.be.equal(true);
         done();
     });
 
@@ -67,6 +70,31 @@ describe('Unit - Controllers - Patch', function() {
         done();
     });
 
+    it('should `validate` with missing data.id then call next(err)', function(done) {
+        const req = {
+            body: {
+                data: {
+                    attributes: {
+                        missing: 'stuff'
+                    }
+                }
+            }
+        };
+
+        const res = {};
+        const next = sinon.spy();
+
+        patchController.validate(req, res, next);
+
+        const calledWithErrors = next.calledWithMatch(function(err) {
+            return typeof(err) !== 'undefined' && err.status === 400;
+        });
+
+        next.calledOnce.should.be.equal(true);
+        calledWithErrors.should.be.equal(true);
+        done();
+    });
+
     it('should `find` then call next() and pass results', function(done) {
         const req = {
             params: {
@@ -74,6 +102,7 @@ describe('Unit - Controllers - Patch', function() {
             },
             body: {
                 data: {
+                    id: users[0]._id,
                     attributes: {
                         'last-name': 'Musk'
                     }
