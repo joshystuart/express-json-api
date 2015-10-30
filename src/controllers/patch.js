@@ -13,7 +13,9 @@ function recordNotFoundException(next) {
 }
 
 function validate(req, res, next) {
-    if (!!req.body.data && !!req.body.data.id && !!req.body.data.attributes) {
+    // TODO add check for req.body.type as per jsonapi.org requirements.
+
+    if (!!req.body.data && !!req.body.data.attributes) {
         next();
     } else {
         const err = new Error('Request failed validation');
@@ -23,12 +25,13 @@ function validate(req, res, next) {
 }
 
 function find(req, res, next) {
-    const id = req.body.data.id;
-    const Schema = res.locals.target;
+    // get the resource if from the route
+    const id = req.params[res.locals.id];
+    const Schema = res.locals.model.schema;
     const criteria = {};
 
     if (!!Schema) {
-        criteria[req.id] = id;
+        criteria[res.locals.id] = id;
         const query = Schema.findOne(criteria);
 
         query.exec(function(err, result) {
@@ -69,8 +72,8 @@ function serialize(req, res, next) {
     const results = res.locals.resource;
 
     // check if there is a mapper.serializer
-    if (!!res.locals.mapper && !!res.locals.mapper.serialize) {
-        const serializeFunction = res.locals.mapper.serialize;
+    if (!!res.locals.model.mapper && !!res.locals.model.mapper.serialize) {
+        const serializeFunction = res.locals.model.mapper.serialize;
 
         if (!!results && typeof(serializeFunction) === 'function') {
             res.locals.resource = serializeFunction(results);

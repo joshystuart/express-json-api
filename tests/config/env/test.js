@@ -6,10 +6,5 @@ module.exports = {
         name: 'express-json-api-test'
     },
     port: 8080,
-    db: 'mongodb://localhost/express-json-api-test',
-    logger: {
-        prefix: 'test -',
-        transports: [],
-        Console: {}
-    }
+    db: 'mongodb://localhost/express-json-api-test'
 };

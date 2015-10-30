@@ -9,6 +9,11 @@ const expressJsonApi = require('../../src/api');
 const routes = require('./routes');
 
 module.exports = function(app) {
+    const env = process.env.NODE_ENV || 'development';
+
+    app.locals.ENV = env;
+    app.locals.ENV_DEVELOPMENT = env === 'development';
+
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({
         extended: true
@@ -17,19 +22,36 @@ module.exports = function(app) {
     app.use(compress());
     app.use(methodOverride());
 
-    expressJsonApi(app, routes);
-
+    expressJsonApi.init(app, routes);
     app.use(function(req, res, next) {
         const err = new Error('Not Found');
         err.status = 404;
         next(err);
     });
 
+    /**
+     * In development environments display 500 errors.
+     */
+    if (app.get('env') === 'development') {
+        app.use(function(err, req, res) {
+            res.status(err.status || 500);
+            res.json({
+                message: err.message,
+                error: err,
+                title: 'error'
+            });
+        });
+    }
+
+    /**
+     * In production environments do not display the 500 errors.
+     */
+
     app.use(function(err, req, res) {
         res.status(err.status || 500);
         res.json({
             message: err.message,
-            error: err,
+            error: {},
             title: 'error'
         });
     });

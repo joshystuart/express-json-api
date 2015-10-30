@@ -9,7 +9,7 @@ describe('Unit - Controllers - Patch', function() {
     before(function(done) {
         db.connect().
             then(function() {
-                db.import(User, users);
+                return db.import(User, users);
             }).
             then(function() {
                 done();
@@ -24,7 +24,7 @@ describe('Unit - Controllers - Patch', function() {
             });
     });
 
-    it('`validate` with correct params should call next()', function(done) {
+    it('should `validate` with correct params then call next()', function(done) {
         const req = {
             body: {
                 data: {
@@ -44,7 +44,7 @@ describe('Unit - Controllers - Patch', function() {
         done();
     });
 
-    it('`validate` with missing data.attributes should call next(err)', function(done) {
+    it('should `validate` with missing data.attributes then call next(err)', function(done) {
         const req = {
             body: {
                 data: {
@@ -67,55 +67,37 @@ describe('Unit - Controllers - Patch', function() {
         done();
     });
 
-    it('`validate` with missing data.id should call next(err)', function(done) {
+    it('should `find` then call next() and pass results', function(done) {
         const req = {
+            params: {
+                _id: users[0]._id
+            },
             body: {
                 data: {
                     attributes: {
-                        'last-name': 'Little'
+                        'last-name': 'Musk'
                     }
-                }
-            }
-        };
-
-        const res = {};
-        const next = sinon.spy();
-
-        patchController.validate(req, res, next);
-
-        const calledWithErrors = next.calledWithMatch(function(err) {
-            return typeof(err) !== 'undefined' && err.status === 400;
-        });
-
-        next.calledOnce.should.be.equal(true);
-        calledWithErrors.should.be.equal(true);
-        done();
-    });
-
-    it('`find` should call next() and pass results', function(done) {
-        const req = {
-            id: '_id',
-            body: {
-                data: {
-                    id: users[0]._id
                 }
             }
         };
 
         const res = {
             locals: {
-                target: User
+                id: '_id',
+                model: {
+                    schema: User
+                }
             }
         };
         const next = function() {
-            res.locals.resource.username.should.be.equal('neilastronaut');
+            res.locals.resource.username.should.be.equal('elonmusk');
             done();
         };
 
         patchController.find(req, res, next);
     });
 
-    it('`update` should update existing record and pass results', function(done) {
+    it('should `update` then update existing record and pass results', function(done) {
         const req = {
             body: {
                 data: {
@@ -144,7 +126,7 @@ describe('Unit - Controllers - Patch', function() {
         });
     });
 
-    it('`serialize` should transform response', function(done) {
+    it('should `serialize` then transform response', function(done) {
         const req = {};
         const res = {
             locals: {
@@ -155,19 +137,21 @@ describe('Unit - Controllers - Patch', function() {
                     'created-on': 'Wed Oct 28 2015 02:08:51 GMT+0000 (UTC)',
                     _id: '562f20dae5170edf1ca31b0f'
                 },
-                mapper: {
-                    serialize: function(model) {
-                        return  {
-                            name: {
-                                first: model['first-name'],
-                                last: model['last-name']
-                            },
-                            username: model.username,
-                            meta: {
-                                id: model._id,
-                                'created-on': model['created-on']
-                            }
-                        };
+                model: {
+                    mapper: {
+                        serialize: function(model) {
+                            return {
+                                name: {
+                                    first: model['first-name'],
+                                    last: model['last-name']
+                                },
+                                username: model.username,
+                                meta: {
+                                    id: model._id,
+                                    'created-on': model['created-on']
+                                }
+                            };
+                        }
                     }
                 }
             }
@@ -183,7 +167,7 @@ describe('Unit - Controllers - Patch', function() {
         patchController.serialize(req, res, next);
     });
 
-    it('`render` should return response object in json', function(done) {
+    it('should `render` then return response object in json', function(done) {
         const req = {};
         const res = {
             locals: {
@@ -201,7 +185,8 @@ describe('Unit - Controllers - Patch', function() {
                 done();
             }
         };
-        const next = function() {};
+        const next = function() {
+        };
 
         patchController.render(req, res, next);
     });

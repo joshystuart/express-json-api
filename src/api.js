@@ -15,10 +15,10 @@ const patch = require('./controllers/patch');
  * @param req
  */
 function applyRouteConfig(route, req, res) {
-    req.id = route.id;
-    res.locals.target = route.model;
-    res.locals.mapper = route.mapper;
+    res.locals.id = route.id;
+    res.locals.model = route.model;
     res.locals.limit = route.limit;
+    res.locals.search = route.search;
 }
 
 function createGetListRoute(route, middleware) {
@@ -51,24 +51,19 @@ function createPatchRoute(route, middleware) {
 function createRoute(app, route) {
     app.use(route.endpoint, router);
 
-    _.forEach(route.methods, function(method, key) {
-        if (typeof(key) === 'number' && typeof(method) === 'string') {
-            // defaults
-            switch (method) {
-                case 'get':
-                    createGetRoute(route, get.default);
-                    break;
-                case 'getList':
-                    createGetListRoute(route, getList.default);
-                    break;
-                case 'patch':
-                    createPatchRoute(route, patch.default);
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            // TODO allow overrides
+    _.forEach(route.methods, function(actions, key) {
+        switch (key) {
+            case 'get':
+                createGetRoute(route, actions);
+                break;
+            case 'getList':
+                createGetListRoute(route, actions);
+                break;
+            case 'patch':
+                createPatchRoute(route, actions);
+                break;
+            default:
+                break;
         }
     });
 }
@@ -79,8 +74,13 @@ function createRoutes(app, config) {
     });
 }
 
-function expressJsonApi(app, config) {
+function init(app, config) {
     createRoutes(app, config);
 }
 
-module.exports = expressJsonApi;
+module.exports.init = init;
+module.exports.controllers = {
+    getList: getList,
+    get: get,
+    patch: patch
+};

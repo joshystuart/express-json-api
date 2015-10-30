@@ -1,7 +1,7 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-const _ = require('underscore');
+const _ = require('lodash');
 const config = require('../../config/config');
 const winston = require('winston');
 

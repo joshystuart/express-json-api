@@ -1,7 +1,7 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-function targetModelNotFoundException(next) {
+function modelNotFoundException(next) {
     const err = new Error('Target Model Not Found');
     err.status = 500;
     next(err);
@@ -9,35 +9,32 @@ function targetModelNotFoundException(next) {
 
 function query(req, res, next) {
     const criteria = {};
-    let err;
 
-    if (!!req.target) {
-        if (!!req.id && !!req.params[req.id]) {
-            criteria[req.id] = req.params[req.id];
-            res.query = req.target.findOne(criteria);
+    if (!!res.locals.model) {
+        if (!!res.locals.id && !!req.params[res.locals.id]) {
+            criteria[res.locals.id] = req.params[res.locals.id];
+            res.locals.query = res.locals.model.findOne(criteria);
             next();
         } else {
-            err = new Error('Incorrect Parameter');
+            const err = new Error('Incorrect Parameter');
             err.status = 400;
             next(err);
         }
     } else {
-        targetModelNotFoundException(next);
+        modelNotFoundException(next);
     }
 }
 
 function execute(req, res, next) {
-    const resQuery = res.query;
+    const resQuery = res.locals.query;
 
     if (!!resQuery) {
         resQuery.lean();
         resQuery.exec('findOne', function(err, results) {
-            let noResults;
-
             if (err) {
                 next(err);
             } else if (!results) {
-                noResults = new Error('Resource not found');
+                const noResults = new Error('Resource not found');
                 err.status = 404;
                 next(noResults);
             } else {
@@ -46,20 +43,24 @@ function execute(req, res, next) {
             }
         });
     } else {
-        targetModelNotFoundException(next);
+        modelNotFoundException(next);
     }
 }
 
 function serialize(req, res, next) {
     // run the data through any serializers or data mappers
     const results = res.results;
+    const mapper = res.locals.model.mapper;
 
-    if (!!results) {
-        // TODO: serialize
+    if (!!results && !!mapper && typeof mapper.serialize === 'function') {
+        mapper.serialize(results, function(serialized) {
+            res.results = serialized;
+            next();
+        });
+    } else {
+        res.results = results;
+        next();
     }
-    res.results = results;
-
-    next();
 }
 
 function render(req, res) {
@@ -79,7 +80,7 @@ function render(req, res) {
 module.exports.query = query;
 module.exports.execute = execute;
 module.exports.serialize = serialize;
-module.exports.prepareViewModel = render;
+module.exports.render = render;
 
 module.exports.default = [
     query,
