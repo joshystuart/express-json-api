@@ -1,30 +1,74 @@
 [
     {
-        "_id": "562f20dae5170edf1ca31b0f",
-        "username": "elonmusk",
-        "first-name": "Elon",
-        "last-name": "Musk"
-    },
-    {
         "_id": "562d8ac45e5d77d80c478065",
+        "role": "User",
         "username": "sergeybrin",
         "first-name": "Sergey",
-        "last-name": "Brin"
+        "last-name": "Brin",
+        "address": {
+            "line1": "345 Spear Street",
+            "city": "San Francisco",
+            "state": "CA",
+            "postcode": "94105",
+            "country": "USA"
+        },
+        "addresses": [
+            {
+                "line1": "345 Spear Street",
+                "city": "San Francisco",
+                "state": "CA",
+                "postcode": "94105",
+                "country": "USA"
+            }
+        ]
     },
     {
         "_id": "56304107028af4b20b84159b",
+        "role": "user",
         "username": "markzuckerberg",
         "first-name": "Mark",
-        "last-name": "Zuckerberg"
+        "last-name": "Zuckerberg",
+        "address": {
+            "line1": "1 Hacker Way",
+            "city": "Menlo Park",
+            "state": "CA",
+            "postcode": "94025",
+            "country": "USA"
+        },
+        "addresses": [
+            {
+                "line1": "1 Hacker Way",
+                "city": "Menlo Park",
+                "state": "CA",
+                "postcode": "94025",
+                "country": "USA"
+            }
+        ]
     },
     {
         "_id": "56324496e24ba95153a462bc",
+        "role": "user",
         "username": "neilastronaut",
         "first-name": "Neil",
-        "last-name": "Armstrong"
+        "last-name": "Armstrong",
+        "address": {
+            "city": "Washington",
+            "state": "DC",
+            "postcode": "20546-0001",
+            "country": "US"
+        },
+        "addresses": [
+            {
+                "city": "Washington",
+                "state": "DC",
+                "postcode": "20546-0001",
+                "country": "US"
+            }
+        ]
     },
     {
         "_id": "563032c37b150fa861740028",
+        "role": "user",
         "username": "ladyada",
         "first-name": "Ada",
         "last-name": "Lovelace"

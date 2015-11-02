@@ -1,0 +1,38 @@
+[
+    {
+        "_id": "562f20dae5170edf1ca31b0f",
+        "role": "Admin",
+        "acls": [
+            "users:create",
+            "users:read",
+            "users:update",
+            "users:delete"
+        ],
+        "username": "elonmusk",
+        "first-name": "Elon",
+        "last-name": "Musk",
+        "address": {
+            "line1": "45500 Fremont Boulevard",
+            "city": "Fremont",
+            "state": "CA",
+            "postcode": "94538",
+            "country": "US"
+        },
+        "addresses": [
+            {
+                "line1": "650 Church Street",
+                "city": "Cremorne",
+                "state": "VIC",
+                "postcode": "3121",
+                "country": "AU"
+            },
+            {
+                "line1": "45500 Fremont Boulevard",
+                "city": "Fremont",
+                "state": "CA",
+                "postcode": "94538",
+                "country": "US"
+            }
+        ]
+    }
+]

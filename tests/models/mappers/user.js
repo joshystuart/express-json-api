@@ -8,6 +8,7 @@ UserSerializer.prototype.serialize = function(model) {
             first: model['first-name'],
             last: model['last-name']
         },
+        address: model.address,
         credentials: {
             username: model.username
         }

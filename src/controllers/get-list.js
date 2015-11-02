@@ -27,6 +27,8 @@ function query(req, res, next) {
             res.locals.query = res.locals.query.populate(model.populate);
         }
 
+        res.locals.query.lean();
+
         next();
     } else {
         modelNotFoundException(next);

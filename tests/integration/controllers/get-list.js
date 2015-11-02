@@ -1,9 +1,12 @@
 require('babel/register');
-require('should');
+const should = require('should');
+const q = require('q');
 const app = require('../app');
 const request = require('supertest');
 const db = require('../../utils/db');
+const admins = require('../../fixtures/admins.json');
 const users = require('../../fixtures/users.json');
+const Admin = require('../../models/admin');
 const User = require('../../models/user');
 const logger = require('../../../src/utils/logger');
 
@@ -11,7 +14,10 @@ describe('Integration - Controllers - Get-list', function() {
     before(function(done) {
         db.connect().
             then(function() {
-                return db.import(User, users);
+                return q.all([
+                    db.import(User, users),
+                    db.import(Admin, admins)
+                ]);
             }).
             then(function() {
                 return app.init();
@@ -25,7 +31,10 @@ describe('Integration - Controllers - Get-list', function() {
     });
 
     after(function(done) {
-        db.removeAll(User).
+        q.all([
+            db.removeAll(User),
+            db.removeAll(Admin)
+        ]).
             then(function() {
                 return app.stop();
             }).
@@ -40,15 +49,44 @@ describe('Integration - Controllers - Get-list', function() {
             });
     });
 
-    it('should filter by field parameter', function(done) {
+    it('should get all user records', function(done) {
         request(app.getExpressApplication()).
-            get('/users/?filter[username]=elonmusk').
+            get('/users').
             set('Content-Type', 'application/json').
             expect(200).
             end(function(err, res) {
-                if (err) {
-                    throw err;
-                }
+                should.not.exist(err);
+
+                res.body.data.length.should.be.exactly(5);
+                res.body.meta.should.have.ownProperty('page');
+                done();
+            });
+    });
+
+    it('should get only admin records', function(done) {
+        request(app.getExpressApplication()).
+            get('/admins').
+            set('Content-Type', 'application/json').
+            expect(200).
+            end(function(err, res) {
+                should.not.exist(err);
+
+                res.body.data.length.should.be.exactly(1);
+
+                res.body.data[0]['first-name'].should.be.exactly('Elon');
+                res.body.data[0]['last-name'].should.be.exactly('Musk');
+                res.body.meta.should.have.ownProperty('page');
+                done();
+            });
+    });
+
+    it('should filter by field parameter', function(done) {
+        request(app.getExpressApplication()).
+            get('/users?filter[username]=elonmusk').
+            set('Content-Type', 'application/json').
+            expect(200).
+            end(function(err, res) {
+                should.not.exist(err);
 
                 res.body.data.length.should.be.exactly(1);
                 res.body.data[0].name.first.should.be.exactly('Elon');
@@ -63,9 +101,7 @@ describe('Integration - Controllers - Get-list', function() {
             set('Content-Type', 'application/json').
             expect(200).
             end(function(err, res) {
-                if (err) {
-                    throw err;
-                }
+                should.not.exist(err);
 
                 res.body.data.length.should.be.exactly(5);
                 res.body.data[0].name.last.should.be.exactly('Armstrong');
@@ -80,9 +116,7 @@ describe('Integration - Controllers - Get-list', function() {
             set('Content-Type', 'application/json').
             expect(200).
             end(function(err, res) {
-                if (err) {
-                    throw err;
-                }
+                should.not.exist(err);
 
                 res.body.data.length.should.be.exactly(5);
                 res.body.data[0].name.first.should.be.exactly('Sergey');
@@ -91,18 +125,17 @@ describe('Integration - Controllers - Get-list', function() {
             });
     });
 
-    it('should get all records', function(done) {
+    it('should sort by sub document in ascending order', function(done) {
         request(app.getExpressApplication()).
-            get('/users').
+            get('/users?sort=address.city').
             set('Content-Type', 'application/json').
             expect(200).
             end(function(err, res) {
-                if (err) {
-                    throw err;
-                }
+                should.not.exist(err);
 
                 res.body.data.length.should.be.exactly(5);
-                res.body.meta.should.have.ownProperty('page');
+                res.body.data[0].name.last.should.be.exactly('Lovelace');
+                res.body.data[3].name.last.should.be.exactly('Armstrong');
                 done();
             });
     });
@@ -113,9 +146,7 @@ describe('Integration - Controllers - Get-list', function() {
             set('Content-Type', 'application/json').
             expect(200).
             end(function(err, res) {
-                if (err) {
-                    throw err;
-                }
+                should.not.exist(err);
 
                 res.body.data.length.should.be.exactly(1);
                 res.body.data[0].name.first.should.be.exactly('Elon');
@@ -124,15 +155,13 @@ describe('Integration - Controllers - Get-list', function() {
             });
     });
 
-    it('should paginate by limit & offset parameters', function(done) {
+    it('should sort and paginate by limit & offset parameters', function(done) {
         request(app.getExpressApplication()).
-            get('/users?page[limit]=1&page[offset]=3').
+            get('/users?sort=first-name&page[limit]=1&page[offset]=3').
             set('Content-Type', 'application/json').
             expect(200).
             end(function(err, res) {
-                if (err) {
-                    throw err;
-                }
+                should.not.exist(err);
 
                 res.body.data.length.should.be.exactly(1);
                 res.body.data[0].name.first.should.be.exactly('Neil');
@@ -147,9 +176,7 @@ describe('Integration - Controllers - Get-list', function() {
             set('Content-Type', 'application/json').
             expect(200).
             end(function(err, res) {
-                if (err) {
-                    throw err;
-                }
+                should.not.exist(err);
 
                 res.body.data.length.should.be.exactly(0);
                 done();

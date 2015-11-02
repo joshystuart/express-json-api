@@ -1,4 +1,5 @@
 const user = require('../models/user');
+const admin = require('../models/admin');
 const userMapper = require('../models/mappers/user');
 const getList = require('../../src/controllers/get-list');
 const patch = require('../../src/controllers/patch');
@@ -20,6 +21,20 @@ module.exports = {
             search: {
                 active: true,
                 fields: ['first-name']
+            }
+        },
+        {
+            endpoint: '/admins',
+            model: {
+                schema: admin
+            },
+            limit: 20,
+            id: '_id',
+            methods: {
+                getList: getList.default
+            },
+            search: {
+                active: false
             }
         }
     ]

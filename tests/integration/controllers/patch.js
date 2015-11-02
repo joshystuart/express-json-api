@@ -1,5 +1,5 @@
 require('babel/register');
-require('should');
+const should = require('should');
 const app = require('../app');
 const request = require('supertest');
 const db = require('../../utils/db');
@@ -41,7 +41,7 @@ describe('Integration - Controllers - Patch', function() {
     });
 
     it('should update an existing database record', function(done) {
-        const id = users[4]._id;
+        const id = users[3]._id;
         const updates = {
             data: {
                 id: id,
@@ -55,12 +55,15 @@ describe('Integration - Controllers - Patch', function() {
             patch('/users/' + id).
             set('Content-Type', 'application/json').
             send(updates).
-            expect(function(res) {
+            expect(200).
+            end(function(err, res) {
+                should.not.exist(err);
+
                 // data response has been transformed by serializer
                 res.body.data.name.last.should.be.equal('Lovegood');
                 res.body.data.name.first.should.be.equal('Ada');
-            }).
-            expect(200, done);
+                done();
+            });
     });
 
     it('should return http 404 when updating a missing record', function(done) {
