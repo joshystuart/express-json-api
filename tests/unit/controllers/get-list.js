@@ -98,7 +98,7 @@ describe('Unit - Controllers - Get-list', function() {
                     schema: User
                 },
                 query: User.find({})
-            },
+            }
         };
         const next = sinon.spy();
 
@@ -141,7 +141,7 @@ describe('Unit - Controllers - Get-list', function() {
             },
             json: function(response) {
                 response.meta.page.total.should.be.equal(1);
-                response.data.username.should.be.equal('elonmusk');
+                response.data.username.should.be.equal('sergeybrin');
                 done();
             }
         };

@@ -3,7 +3,6 @@
  */
 const _ = require('lodash');
 const express = require('express');
-const router = express.Router(); // eslint-disable-line new-cap
 const get = require('./controllers/get');
 const getList = require('./controllers/get-list');
 const patch = require('./controllers/patch');
@@ -21,7 +20,7 @@ function applyRouteConfig(route, req, res) {
     res.locals.search = route.search;
 }
 
-function createGetListRoute(route, middleware) {
+function createGetListRoute(router, route, middleware) {
     router.get('/', function(req, res, next) {
         // apply target
         applyRouteConfig(route, req, res);
@@ -30,7 +29,7 @@ function createGetListRoute(route, middleware) {
     }, middleware);
 }
 
-function createGetRoute(route, middleware) {
+function createGetRoute(router, route, middleware) {
     router.get('/:' + route.id, function(req, res, next) {
         // apply target
         applyRouteConfig(route, req, res);
@@ -39,7 +38,7 @@ function createGetRoute(route, middleware) {
     }, middleware);
 }
 
-function createPatchRoute(route, middleware) {
+function createPatchRoute(router, route, middleware) {
     router.patch('/:' + route.id, function(req, res, next) {
         // apply target
         applyRouteConfig(route, req, res);
@@ -49,18 +48,19 @@ function createPatchRoute(route, middleware) {
 }
 
 function createRoute(app, route) {
+    const router = express.Router(); // eslint-disable-line new-cap
     app.use(route.endpoint, router);
 
     _.forEach(route.methods, function(actions, key) {
         switch (key) {
             case 'get':
-                createGetRoute(route, actions);
+                createGetRoute(router, route, actions);
                 break;
             case 'getList':
-                createGetListRoute(route, actions);
+                createGetListRoute(router, route, actions);
                 break;
             case 'patch':
-                createPatchRoute(route, actions);
+                createPatchRoute(router, route, actions);
                 break;
             default:
                 break;

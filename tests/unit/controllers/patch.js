@@ -104,7 +104,7 @@ describe('Unit - Controllers - Patch', function() {
                 data: {
                     id: users[0]._id,
                     attributes: {
-                        'last-name': 'Musk'
+                        'last-name': 'Brin'
                     }
                 }
             }
@@ -119,7 +119,7 @@ describe('Unit - Controllers - Patch', function() {
             }
         };
         const next = function() {
-            res.locals.resource.username.should.be.equal('elonmusk');
+            res.locals.resource.username.should.be.equal('sergeybrin');
             done();
         };
 
