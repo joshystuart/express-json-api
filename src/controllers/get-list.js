@@ -43,11 +43,20 @@ function search(req, res, next) {
 
     if (!!res.locals.model) {
         if (!!config && !!config.active && !!param) {
-            const terms = {$in: param.trim().split(' ')};
+            const terms = param.trim().split(' ');
+            const matchingExpressions = terms.
+                filter(function(term) {
+                    if (!_.isEmpty(term)) {
+                        return term;
+                    }
+                }).
+                map(function(term) {
+                    return new RegExp(term.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'i');
+                });
 
             _.forEach(config.fields, function(fieldName) {
                 const field = {};
-                field[fieldName] = terms;
+                field[fieldName] = {$in: matchingExpressions};
                 criterion.$or.push(field);
             });
         }
@@ -147,7 +156,7 @@ function page(req, res, next) {
 
             // reset and add limits
             resQuery.skip(res.locals.page.offset).
-                limit(res.locals.page.limit);
+            limit(res.locals.page.limit);
 
             next(err);
         });
