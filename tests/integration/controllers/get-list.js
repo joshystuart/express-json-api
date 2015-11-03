@@ -140,7 +140,7 @@ describe('Integration - Controllers - Get-list', function() {
             });
     });
 
-    it('should search by configured fields', function(done) {
+    it('should search by configured fields with full match', function(done) {
         request(app.getExpressApplication()).
             get('/users?q=Elon').
             set('Content-Type', 'application/json').
@@ -153,6 +153,36 @@ describe('Integration - Controllers - Get-list', function() {
                 res.body.data[0].name.last.should.be.exactly('Musk');
                 done();
             });
+    });
+
+    it('should search by configured fields with case insensitive partial match', function(done) {
+        request(app.getExpressApplication()).
+        get('/users?q=elo').
+        set('Content-Type', 'application/json').
+        expect(200).
+        end(function(err, res) {
+            should.not.exist(err);
+
+            res.body.data.length.should.be.exactly(1);
+            res.body.data[0].name.first.should.be.exactly('Elon');
+            res.body.data[0].name.last.should.be.exactly('Musk');
+            done();
+        });
+    });
+
+    it('should search by configured fields with multiple terms', function(done) {
+        request(app.getExpressApplication()).
+        get('/users?q=elon+musk').
+        set('Content-Type', 'application/json').
+        expect(200).
+        end(function(err, res) {
+            should.not.exist(err);
+
+            res.body.data.length.should.be.exactly(1);
+            res.body.data[0].name.first.should.be.exactly('Elon');
+            res.body.data[0].name.last.should.be.exactly('Musk');
+            done();
+        });
     });
 
     it('should sort and paginate by limit & offset parameters', function(done) {
