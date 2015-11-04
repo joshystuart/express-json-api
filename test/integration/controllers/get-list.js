@@ -1,4 +1,3 @@
-require('babel/register');
 const should = require('should');
 const q = require('q');
 const app = require('../app');
