@@ -1,4 +1,3 @@
-require('babel/register');
 const sinon = require('sinon');
 const db = require('../../utils/db');
 const User = require('../../models/user');

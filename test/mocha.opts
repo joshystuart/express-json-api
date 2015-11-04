@@ -1,0 +1,4 @@
+--reporter spec-xunit-file -r should
+--ui bdd
+--recursive
+--require babel/register

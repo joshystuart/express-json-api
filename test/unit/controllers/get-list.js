@@ -1,4 +1,3 @@
-require('babel/register');
 require('should');
 const sinon = require('sinon');
 const db = require('../../utils/db');
