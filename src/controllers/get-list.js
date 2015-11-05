@@ -84,7 +84,15 @@ function filter(req, res, next) {
             _.forEach(req.query.filter, function(value, key) {
                 if (!!schema.path(key)) {
                     const field = {};
-                    field[key] = value;
+
+                    // handle multiple comma separated values
+                    if (value.indexOf(',') > -1) {
+                        field[key] = {
+                            $in: value.split(',')
+                        };
+                    } else {
+                        field[key] = value;
+                    }
                     criterion.$and.push(field);
                 }
             });
@@ -92,7 +100,6 @@ function filter(req, res, next) {
 
         if (criterion.$and.length > 0) {
             res.locals.criteria = _.extend(criteria, criterion);
-
             logger.info('Setting filter criteria: ', criterion);
         }
         next();
