@@ -79,7 +79,7 @@ describe('Integration - Controllers - Get-list', function() {
             });
     });
 
-    it('should filter by field parameter', function(done) {
+    it('should filter by single field', function(done) {
         request(app.getExpressApplication()).
             get('/users?filter[username]=elonmusk').
             set('Content-Type', 'application/json').
@@ -92,6 +92,51 @@ describe('Integration - Controllers - Get-list', function() {
                 res.body.data[0].name.last.should.be.exactly('Musk');
                 done();
             });
+    });
+
+    it('should filter by single field with multiple values', function(done) {
+        request(app.getExpressApplication()).
+        get('/users?filter[username]=elonmusk,markzuckerberg').
+        set('Content-Type', 'application/json').
+        expect(200).
+        end(function(err, res) {
+            should.not.exist(err);
+
+            res.body.data.length.should.be.exactly(2);
+            res.body.data[0].name.first.should.be.exactly('Mark');
+            res.body.data[0].name.last.should.be.exactly('Zuckerberg');
+            res.body.data[1].name.first.should.be.exactly('Elon');
+            res.body.data[1].name.last.should.be.exactly('Musk');
+            done();
+        });
+    });
+
+    it('should filter by multiple fields', function(done) {
+        request(app.getExpressApplication()).
+        get('/users?filter[first-name]=Elon&filter[last-name]=Musk').
+        set('Content-Type', 'application/json').
+        expect(200).
+        end(function(err, res) {
+            should.not.exist(err);
+
+            res.body.data.length.should.be.exactly(1);
+            res.body.data[0].name.first.should.be.exactly('Elon');
+            res.body.data[0].name.last.should.be.exactly('Musk');
+            done();
+        });
+    });
+
+    it('should filter by multiple fields and not return a result', function(done) {
+        request(app.getExpressApplication()).
+        get('/users?filter[first-name]=Elon&filter[last-name]=Not').
+        set('Content-Type', 'application/json').
+        expect(200).
+        end(function(err, res) {
+            should.not.exist(err);
+
+            res.body.data.length.should.be.exactly(0);
+            done();
+        });
     });
 
     it('should sort in ascending order by field', function(done) {
