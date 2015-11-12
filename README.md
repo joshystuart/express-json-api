@@ -1,5 +1,7 @@
 # Express JSON API
 
+[![Build Status](https://travis-ci.org/etaskr/express-json-api.svg?branch=master)](https://travis-ci.org/etaskr/express-json-api)
+
 This is an easy to use Express.js route helper that adapts your Mongoose models to jsonapi.org API endpoints.
 
 ## Install
