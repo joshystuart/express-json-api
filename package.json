@@ -1,28 +1,41 @@
 {
   "name": "express-json-api",
-  "description": "",
+  "description": "The quickest way to create a RESTful api from your mongoose models using the express router and jsonapi.org standards.",
   "version": "0.0.1",
-  "main": "./dist/index.js",
+  "main": "./lib/index.js",
   "author": "Josh Stuart <joshstuartx@gmail.com>",
+  "keywords": [
+    "mongodb",
+    "mongoose",
+    "express",
+    "api",
+    "jsonapi.org",
+    "jsonapi",
+    "rest",
+    "restful"
+  ],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/crimsonronin/express-json-api.git"
   },
   "scripts": {
+    "compile": "babel ./index.js --out-dir ./lib && babel ./config --out-dir ./lib/config  && babel ./src --out-dir ./lib/src",
+    "prepublish": "npm run compile",
     "lint": "./node_modules/.bin/eslint ./src ./tests",
     "start": "./node_modules/nodemon/bin/nodemon.js index.js",
     "unit-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage/unit ./node_modules/.bin/_mocha ./test/unit",
     "integration-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage/integration ./node_modules/.bin/_mocha ./test/integration",
     "pretest": "npm run-script lint",
-    "test": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage ./node_modules/.bin/_mocha ./test/unit ./test/integration",
-    "make": "make clean dist"
+    "test": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage ./node_modules/.bin/_mocha ./test/unit ./test/integration"
   },
   "dependencies": {
-    "express": "^4.0.0",
+    "express": "^4.13.3",
     "lodash": "^3.10.1",
-    "mongoose": "^4.1.2",
+    "mongoose": "^4.3.3",
     "q": "^1.4.1",
-    "winston": "^1.0.1"
+    "winston": "^1.1.2",
+    "xss-filters": "^1.2.6"
   },
   "devDependencies": {
     "babel": "^5.8.29",

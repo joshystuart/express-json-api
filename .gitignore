@@ -1,8 +1,9 @@
+node_modules
+lib
 logs
 *.log
 /coverage/*
 build/Release
-node_modules
 tmp
 .tmp
 .lock-wscript

@@ -85,9 +85,9 @@ Db.prototype.disconnect = function() {
  */
 Db.prototype.create = function(object) {
     return q.ninvoke(object, 'save').
-        then(function() {
-            return object;
-        });
+    then(function() {
+        return object;
+    });
 };
 
 /**
@@ -98,13 +98,13 @@ Db.prototype.create = function(object) {
  */
 Db.prototype.update = function(object) {
     return q.ninvoke(object, 'save').
-        then(function() {
-            return object;
-        });
+    then(function() {
+        return object;
+    });
 };
 
 /**
- * Imports passed data to schema.
+ * Imports passed data to schema using serial promises.
  *
  * @param Schema
  * @param data
@@ -112,14 +112,9 @@ Db.prototype.update = function(object) {
  * @public
  */
 Db.prototype.import = function(Schema, data) {
-    const deferreds = [];
-
-    _.forEach(data, function(entry) {
-        const dataEntry = new Schema(entry);
-        deferreds.push(this.create(dataEntry));
-    }.bind(this));
-
-    return q.all(deferreds);
+    return data.reduce(function(promise, entry) {
+        return this.create(new Schema(entry));
+    }.bind(this), q.resolve());
 };
 
 /**

@@ -12,6 +12,13 @@ function recordNotFoundException(next) {
     next(err);
 }
 
+/**
+ * Validates the request input to ensure that it contains an id and attributes.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function validate(req, res, next) {
     // TODO add check for req.body.type as per jsonapi.org requirements.
 
@@ -24,15 +31,58 @@ function validate(req, res, next) {
     }
 }
 
+/**
+ * Sanitize the input to ensure the data submitted does is escaped correctly.
+ *
+ * This allows for a custom sanitizer, but also falls back to a default xss sanitizer.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+function sanitize(req, res, next) {
+    const options = res.locals.sanitize;
+    let sanitizer = options.method;
+    const updates = req.body.data.attributes;
+
+    if (typeof(sanitizer) === 'undefined') {
+        sanitizer = require('../utils/sanitizer');
+    }
+
+    if (options.active && typeof(options.fields) === 'undefined') {
+        // sanitize all fields
+        _.forEach(_.keys(updates), function(field) {
+            updates[field] = sanitizer.sanitize(updates[field]);
+        });
+    } else if (options.active && options.fields.constructor === Array) {
+        // sanitize selected fields
+        _.forEach(_.keys(updates), function(field) {
+            if (options.fields.indexOf(field) > -1) {
+                updates[field] = sanitizer.sanitize(updates[field]);
+            }
+        });
+    }
+
+    req.body.data.attributes = updates;
+    next();
+}
+
+/**
+ * Finds the resource based on the id and model registered to the route.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function find(req, res, next) {
     // get the resource if from the route
     const id = req.params[res.locals.id];
-    const Schema = res.locals.model.schema;
+    const model = res.locals.model;
     const criteria = {};
 
-    if (!!Schema) {
+    if (!!model) {
         criteria[res.locals.id] = id;
-        const query = Schema.findOne(criteria);
+        const query = model.findOne(criteria);
 
         query.exec(function(err, result) {
             if (err) {
@@ -47,20 +97,27 @@ function find(req, res, next) {
     }
 }
 
+/**
+ * Updates the found model with the passed data. Since this is a patch, it is a merge, rather than a replace.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function update(req, res, next) {
     const updates = req.body.data.attributes;
-    const model = res.locals.resource;
+    const resource = res.locals.resource;
 
-    if (!!model) {
-        const updatedModel = _.merge(model, updates);
+    if (!!resource) {
+        const updatedResource = _.merge(resource, updates);
 
-        updatedModel.save(function(error) {
+        updatedResource.save(function(error) {
             if (error) {
                 const err = new Error('Error on model save:', err);
                 err.status = 404;
                 next(err);
             }
-            res.locals.resource = model;
+            res.locals.resource = resource;
             next();
         });
     } else {
@@ -68,27 +125,43 @@ function update(req, res, next) {
     }
 }
 
+/**
+ * If a serializer is provided, the data is mapped from the model structure, to the provided response structure.
+ *
+ * // TODO centralize serializer / unserializer and make it asynchronous.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function serialize(req, res, next) {
-    const results = res.locals.resource;
+    const resource = res.locals.resource;
 
     // check if there is a mapper.serializer
-    if (!!res.locals.model.mapper && !!res.locals.model.mapper.serialize) {
-        const serializeFunction = res.locals.model.mapper.serialize;
+    if (!!res.locals.mapper && !!res.locals.mapper.serialize) {
+        const serializeFunction = res.locals.mapper.serialize;
 
-        if (!!results && typeof(serializeFunction) === 'function') {
-            res.locals.resource = serializeFunction(results);
+        if (!!resource && typeof(serializeFunction) === 'function') {
+            res.locals.resource = serializeFunction(resource);
         }
     } else {
-        res.locals.resource = results;
+        res.locals.resource = resource;
     }
 
     next();
 }
 
+/**
+ * Renders the model to the json response.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function render(req, res, next) {
-    const results = res.locals.resource;
+    const resource = res.locals.resource;
 
-    if (typeof(results) === 'undefined') {
+    if (typeof(resource) === 'undefined') {
         const err = new Error('Nothing to render');
         err.status = 500;
         next(err);
@@ -102,18 +175,26 @@ function render(req, res, next) {
                 limit: 1
             }
         },
-        data: res.locals.resource
+        data: resource
     });
 }
 
+/**
+ * Expose all the functions so that they can be reused in custom implementations.
+ */
 module.exports.validate = validate;
+module.exports.sanitize = sanitize;
 module.exports.find = find;
 module.exports.update = update;
 module.exports.serialize = serialize;
 module.exports.render = render;
 
+/**
+ * Expose a default patch implementation.
+ */
 module.exports.default = [
     validate,
+    sanitize,
     find,
     update,
     serialize,
