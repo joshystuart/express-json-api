@@ -16,15 +16,22 @@ function queryNotFoundException(next) {
     next(err);
 }
 
+/**
+ * Instantiates the monogo query by mapping the route to the mongoose model.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function query(req, res, next) {
     const model = res.locals.model;
     if (!!model) {
         const criteria = res.locals.criteria || {};
-        res.locals.query = model.schema.find(criteria);
+        res.locals.query = model.find(criteria);
 
-        if (!!model.populate) {
-            logger.info('Populating model with the following fields: ', model.populate);
-            res.locals.query = res.locals.query.populate(model.populate);
+        if (!!res.locals.populate) {
+            logger.info('Populating model with the following fields: ', res.locals.populate);
+            res.locals.query = res.locals.query.populate(res.locals.populate);
         }
 
         res.locals.query.lean();
@@ -35,6 +42,13 @@ function query(req, res, next) {
     }
 }
 
+/**
+ * Constructs the search query and applies it to the mongo query.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function search(req, res, next) {
     const config = res.locals.search;
     const criterion = {$or: []};
@@ -45,14 +59,14 @@ function search(req, res, next) {
         if (!!config && !!config.active && !!param) {
             const terms = param.trim().split(' ');
             const matchingExpressions = terms.
-                filter(function(term) {
-                    if (!_.isEmpty(term)) {
-                        return term;
-                    }
-                }).
-                map(function(term) {
-                    return new RegExp(term.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'i');
-                });
+            filter(function(term) {
+                if (!_.isEmpty(term)) {
+                    return term;
+                }
+            }).
+            map(function(term) {
+                return new RegExp(term.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'i');
+            });
 
             _.forEach(config.fields, function(fieldName) {
                 const field = {};
@@ -72,8 +86,15 @@ function search(req, res, next) {
     }
 }
 
+/**
+ * Applies the filters to the mongo query.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function filter(req, res, next) {
-    const model = res.locals.model.schema;
+    const model = res.locals.model;
     const criterion = {$and: []};
     const criteria = res.locals.criteria || {};
 
@@ -108,8 +129,15 @@ function filter(req, res, next) {
     }
 }
 
+/**
+ * Applies sort to the mongo query.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function sort(req, res, next) {
-    const model = res.locals.model.schema;
+    const model = res.locals.model;
     const resQuery = res.locals.query;
 
     if (!!model && !!model.schema) {
@@ -133,6 +161,13 @@ function sort(req, res, next) {
     }
 }
 
+/**
+ * Creates the paging data eg. The total, limit and offset.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function page(req, res, next) {
     const resQuery = res.locals.query;
 
@@ -172,6 +207,13 @@ function page(req, res, next) {
     }
 }
 
+/**
+ * Executes the mongo query.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function execute(req, res, next) {
     const resQuery = res.locals.query;
 
@@ -190,36 +232,62 @@ function execute(req, res, next) {
     }
 }
 
+/**
+ * If a serializer is provided, the data is mapped from the model structure, to the provided response structure.
+ *
+ * // TODO centralize serializer / unserializer and make it asynchronous.
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function serialize(req, res, next) {
     // run the data through any serializers or data mappers
-    const results = res.locals.resources;
-    const mapper = res.locals.model.mapper;
+    const resources = res.locals.resources;
+    const mapper = res.locals.mapper;
 
-    if (!!results && !!mapper && typeof mapper.serialize === 'function') {
+    if (!!resources && !!mapper && typeof mapper.serialize === 'function') {
         const serializedResults = [];
 
-        _.forEach(results, function(model) {
+        _.forEach(resources, function(model) {
             serializedResults.push(mapper.serialize(model));
         });
 
         res.locals.resources = serializedResults;
         next();
     } else {
-        res.locals.resources = results;
+        res.locals.resources = resources;
         next();
     }
 }
 
-function render(req, res) {
+/**
+ * Renders the models to the json response.
+ *
+ * @param req
+ * @param res
+ */
+function render(req, res, next) {
+    const resources = res.locals.resources;
+
+    if (typeof(resources) === 'undefined') {
+        const err = new Error('Nothing to render');
+        err.status = 500;
+        next(err);
+    }
+
     // send the data back to the client
     res.json({
         meta: {
             page: res.locals.page
         },
-        data: res.locals.resources
+        data: resources
     });
 }
 
+/**
+ * Expose all the functions so that they can be reused in custom implementations.
+ */
 module.exports.query = query;
 module.exports.search = search;
 module.exports.filter = filter;
@@ -229,6 +297,9 @@ module.exports.execute = execute;
 module.exports.serialize = serialize;
 module.exports.render = render;
 
+/**
+ * Expose a default get-list implementation.
+ */
 module.exports.default = [
     search,
     filter,

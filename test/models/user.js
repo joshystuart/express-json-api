@@ -15,7 +15,10 @@ function User() {
         address: {type: Address.schema},
         addresses: [Address.schema],
         'created-on': Date
-    }, {collection: 'users', discriminatorKey: 'role'});
+    }, {
+        collection: 'users',
+        discriminatorKey: 'role'
+    });
 
     // prior to save do this
     UserSchema.pre('save', function(next) {
