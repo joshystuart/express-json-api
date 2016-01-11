@@ -5,11 +5,12 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const compress = require('compression');
 const methodOverride = require('method-override');
-const expressJsonApi = require('../../src/api');
-const routes = require('./routes');
+import ExpressJsonApi from '../../src/express-json-api-service';
+const routesConfig = require('./routes');
 
 module.exports = function(app) {
     const env = process.env.NODE_ENV || 'development';
+    let expressJsonApi; // eslint-disable-line no-unused-vars
 
     app.locals.ENV = env;
     app.locals.ENV_DEVELOPMENT = env === 'development';
@@ -22,7 +23,8 @@ module.exports = function(app) {
     app.use(compress());
     app.use(methodOverride());
 
-    expressJsonApi.init(app, routes);
+    expressJsonApi = new ExpressJsonApi(app, routesConfig);
+
     app.use(function(req, res, next) {
         const err = new Error('Not Found');
         err.status = 404;

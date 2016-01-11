@@ -1,10 +1,8 @@
 const user = require('../models/user');
 const admin = require('../models/admin');
 const userMapper = require('../models/mappers/user');
-const get = require('../../src/controllers/get');
-const getList = require('../../src/controllers/get-list');
-const patch = require('../../src/controllers/patch');
 const sanitizer = require('../../src/utils/sanitizer');
+import * as controllers from '../../src/controllers.js';
 
 module.exports = {
     routes: [
@@ -15,9 +13,9 @@ module.exports = {
             limit: 20,
             id: '_id',
             methods: {
-                getList: getList.default,
-                patch: patch.default,
-                get: get.default
+                getList: controllers.getList.default,
+                patch: controllers.patch.default,
+                get: controllers.get.default
             },
             search: {
                 active: true,
@@ -35,8 +33,8 @@ module.exports = {
             limit: 20,
             id: '_id',
             methods: {
-                getList: getList.default,
-                patch: patch.default
+                getList: controllers.getList.default,
+                patch: controllers.patch.default
             },
             search: {
                 active: false
@@ -51,7 +49,7 @@ module.exports = {
             limit: 20,
             id: '_id',
             methods: {
-                patch: patch.default
+                patch: controllers.patch.default
             },
             search: {
                 active: false

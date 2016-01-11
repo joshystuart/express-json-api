@@ -1,3 +1,5 @@
-const filters = require('xss-filters');
+import filters from 'xss-filters';
 
-module.exports.sanitize = filters.inHTMLData;
+export default {
+    sanitize: filters.inHTMLData
+};

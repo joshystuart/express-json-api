@@ -63,8 +63,9 @@ describe('Integration Tests', function() {
                     res.body.meta.page.offset.should.be.exactly(1);
                     res.body.meta.page.limit.should.be.exactly(1);
 
-                    res.body.data['first-name'].should.be.exactly('Sergey');
-                    res.body.data['last-name'].should.be.exactly('Brin');
+                    // serialized data
+                    res.body.data.name.first.should.be.exactly('Sergey');
+                    res.body.data.name.last.should.be.exactly('Brin');
                     done();
                 });
             });

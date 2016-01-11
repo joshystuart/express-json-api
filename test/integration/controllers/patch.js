@@ -50,7 +50,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should update an existing database record', function(done) {
+            it('should update an existing resource', function(done) {
                 const id = users[3]._id;
                 const updates = {
                     data: {

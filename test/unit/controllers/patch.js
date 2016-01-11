@@ -1,8 +1,9 @@
+require('should');
 const sinon = require('sinon');
 const db = require('../../utils/db');
 const User = require('../../models/user');
 const users = require('../../fixtures/users.json');
-const patchController = require('../../../src/controllers/patch');
+const patch = require('../../../src/controllers/patch-controller');
 
 describe('Unit Tests', function() {
     describe('Controllers', function() {
@@ -40,7 +41,7 @@ describe('Unit Tests', function() {
                 const res = {};
                 const next = sinon.spy();
 
-                patchController.validate(req, res, next);
+                patch.validate(req, res, next);
                 const calledWithoutErrors = next.calledWith();
 
                 next.calledOnce.should.be.equal(true);
@@ -60,7 +61,7 @@ describe('Unit Tests', function() {
                 const res = {};
                 const next = sinon.spy();
 
-                patchController.validate(req, res, next);
+                patch.validate(req, res, next);
 
                 const calledWithErrors = next.calledWithMatch(function(err) {
                     return typeof(err) !== 'undefined' && err.status === 400;
@@ -85,7 +86,7 @@ describe('Unit Tests', function() {
                 const res = {};
                 const next = sinon.spy();
 
-                patchController.validate(req, res, next);
+                patch.validate(req, res, next);
 
                 const calledWithErrors = next.calledWithMatch(function(err) {
                     return typeof(err) !== 'undefined' && err.status === 400;
@@ -122,7 +123,7 @@ describe('Unit Tests', function() {
                     done();
                 };
 
-                patchController.find(req, res, next);
+                patch.find(req, res, next);
             });
 
             it('should `update` then update existing record and pass results', function(done) {
@@ -150,7 +151,7 @@ describe('Unit Tests', function() {
                         done();
                     };
 
-                    patchController.update(req, res, next);
+                    patch.update(req, res, next);
                 });
             });
 
@@ -190,7 +191,7 @@ describe('Unit Tests', function() {
                     done();
                 };
 
-                patchController.serialize(req, res, next);
+                patch.serialize(req, res, next);
             });
 
             it('should `render` then return response object in json', function(done) {
@@ -214,7 +215,7 @@ describe('Unit Tests', function() {
                 const next = function() {
                 };
 
-                patchController.render(req, res, next);
+                patch.render(req, res, next);
             });
         });
     });

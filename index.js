@@ -2,4 +2,4 @@
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
 
-module.exports = require('./src/api');
+export default './src/express-json-api-service.js';
