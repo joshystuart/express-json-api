@@ -2,11 +2,10 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-const q = require('q');
-const _ = require('lodash');
-const mongoose = require('mongoose');
+import q from 'q';
+import mongoose from 'mongoose';
 const config = require('../config/config');
-const logger = require('../../src/utils/logger');
+import logger from '../../src/utils/logger';
 
 /**
  * A DB util class that abstracts mongoose functions.

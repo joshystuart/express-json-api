@@ -1,10 +1,9 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-module.exports = {
+export default {
     logger: {
         prefix: 'test -',
-        transports: [],
-        Console: {}
+        transports: []
     }
 };

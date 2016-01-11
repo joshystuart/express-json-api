@@ -1,10 +1,23 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-const path = require('path');
+
+import path from 'path';
+import development from './env/development.js';
+import production from './env/production.js';
+import test from './env/test.js';
 const env = process.env.NODE_ENV || 'development';
-const config = require('./env/' + env);
+
+// set up all configs in an object
+const configs = {
+    development: development,
+    production: production,
+    test: test
+};
+
+// select the correct config using the environment variable, else, use the development config.
+const config = configs[env] || development;
 
 config.root = path.normalize(__dirname + '/..');
 
-module.exports = config;
+export default config;

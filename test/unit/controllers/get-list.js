@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const db = require('../../utils/db');
 const User = require('../../models/user');
 const users = require('../../fixtures/users.json');
-const getList = require('../../../src/controllers/get-list');
+const getList = require('../../../src/controllers/get-list-controller');
 
 describe('Unit Tests', function() {
     describe('Controllers', function() {
@@ -102,6 +102,7 @@ describe('Unit Tests', function() {
             });
 
             it('should create `page` then call next() ', function(done) {
+                const total = 100;
                 const req = {
                     query: {
                         page: {
@@ -112,13 +113,27 @@ describe('Unit Tests', function() {
                 };
                 const res = {
                     locals: {
-                        model: User
+                        model: User,
+                        query: {
+                            count: function(cb) {
+                                cb(null, total);
+                            },
+                            skip: function() {
+                                return this;
+                            },
+                            limit: function() {
+                                return this;
+                            }
+                        }
                     }
                 };
                 const next = sinon.spy();
 
                 getList.page(req, res, next);
                 next.calledOnce.should.be.equal(true);
+                res.locals.page.total.should.be.equal(total);
+                res.locals.page.limit.should.be.equal(req.query.page.limit);
+                res.locals.page.offset.should.be.equal(req.query.page.offset);
                 done();
             });
 
