@@ -29,6 +29,7 @@ var expressJsonApi = require('express-json-api');
 var get = expressJsonApi.controllers.get;
 var getList = expressJsonApi.controllers.getList;
 var patch = expressJsonApi.controllers.patch;
+var post = expressJsonApi.controllers.post;
 var userModel = require('../models/user'); // a reference to your mongoose models
 
 var config = {
@@ -41,7 +42,8 @@ var config = {
             methods: {
                 get: get.default,
                 getList: getList.default,
-                patch: patch.default
+                patch: patch.default,
+                post: post.default
             },
             search: {
                 active: true,
@@ -60,6 +62,7 @@ expressJsonApi.init(app, config);
 Now you can access your users by:
 
 * `GET /users` to get all users
+* `POST /users` to create a single user
 * `GET /users/:id` to get a single user
 * `PATCH /users/:id` to update a single user
 
@@ -79,7 +82,6 @@ You can, of course, combine all those together into one long query:
 ## TODO
 
 * Write more thorough documentation on sanitizers, how to override individual implementations, and how to use custom serializers.
-* Create `POST` functionality (I just didn't have the need in the application I was writing this module for).
 * Create `DELETE` functionality.
 * Implement: 
     * Stronger jsonapi response standards (eg. `{ data: { type: "users" } }`). See [http://jsonapi.org/format/#document-resource-objects](http://jsonapi.org/format/#document-resource-objects)
