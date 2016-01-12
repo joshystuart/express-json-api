@@ -44,6 +44,32 @@ class AbstractCreateController extends AbstractController {
         req.body.data.attributes = updates;
         next();
     }
+
+    /**
+     * Renders the model to the json response.
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
+    static render(req, res, next) {
+        const resource = res.locals.resource;
+
+        if (typeof(resource) === 'undefined') {
+            this.setException(500, 'Nothing to render', next);
+        }
+        // send the data back to the client
+        res.json({
+            meta: {
+                page: {
+                    total: 1,
+                    offset: 1,
+                    limit: 1
+                }
+            },
+            data: resource
+        });
+    }
 }
 
 export default AbstractCreateController;

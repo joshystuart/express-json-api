@@ -7,6 +7,7 @@ import * as allControllers from './controllers.js';
 import GetRoute from './routes/get-route.js';
 import GetListRoute from './routes/get-list-route.js';
 import PatchRoute from './routes/patch-route.js';
+import PostRoute from './routes/post-route.js';
 
 class ExpressJsonApiService {
     constructor(app, config) {
@@ -56,7 +57,7 @@ class ExpressJsonApiService {
                     route = new PatchRoute(router, routeConfig, middleware);
                     break;
                 case 'post':
-                    // TODO
+                    route = new PostRoute(router, routeConfig, middleware);
                     break;
                 default:
                     break;
