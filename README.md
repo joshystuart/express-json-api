@@ -56,7 +56,7 @@ var config = {
     ]
 };
 
-expressJsonApi.init(app, config);
+expressJsonApi.factory(app, config);
 ```
 
 Now you can access your users by:
