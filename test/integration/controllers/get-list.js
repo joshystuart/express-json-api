@@ -98,17 +98,17 @@ describe('Integration Tests', function() {
 
             it('should filter by single field with multiple values', function(done) {
                 request(app.getExpressApplication()).
-                get('/users?filter[username]=elonmusk,markzuckerberg').
+                get('/users?filter[username]=elonmusk,markzuckerberg&sort=first-name').
                 set('Content-Type', 'application/json').
                 expect(200).
                 end(function(err, res) {
                     should.not.exist(err);
 
                     res.body.data.length.should.be.exactly(2);
-                    res.body.data[0].name.first.should.be.exactly('Mark');
-                    res.body.data[0].name.last.should.be.exactly('Zuckerberg');
-                    res.body.data[1].name.first.should.be.exactly('Elon');
-                    res.body.data[1].name.last.should.be.exactly('Musk');
+                    res.body.data[0].name.first.should.be.exactly('Elon');
+                    res.body.data[0].name.last.should.be.exactly('Musk');
+                    res.body.data[1].name.first.should.be.exactly('Mark');
+                    res.body.data[1].name.last.should.be.exactly('Zuckerberg');
                     done();
                 });
             });
