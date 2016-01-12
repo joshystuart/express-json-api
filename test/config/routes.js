@@ -15,7 +15,8 @@ module.exports = {
             methods: {
                 getList: controllers.getList.default,
                 patch: controllers.patch.default,
-                get: controllers.get.default
+                get: controllers.get.default,
+                post: controllers.post.default
             },
             search: {
                 active: true,
@@ -34,7 +35,8 @@ module.exports = {
             id: '_id',
             methods: {
                 getList: controllers.getList.default,
-                patch: controllers.patch.default
+                patch: controllers.patch.default,
+                post: controllers.post.default
             },
             search: {
                 active: false
@@ -49,7 +51,8 @@ module.exports = {
             limit: 20,
             id: '_id',
             methods: {
-                patch: controllers.patch.default
+                patch: controllers.patch.default,
+                post: controllers.post.default
             },
             search: {
                 active: false
