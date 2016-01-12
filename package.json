@@ -1,7 +1,7 @@
 {
   "name": "express-json-api",
   "description": "The quickest way to create a RESTful api from your mongoose models using the express router and jsonapi.org standards.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "./lib/index.js",
   "author": "Josh Stuart <joshstuartx@gmail.com>",
   "keywords": [
@@ -20,7 +20,9 @@
     "url": "https://github.com/crimsonronin/express-json-api.git"
   },
   "scripts": {
-    "build": "babel ./index.js --out-dir ./lib && babel ./config --out-dir ./lib/config  && babel ./src --out-dir ./lib/src",
+    "build-server": "babel ./index.js --out-dir ./lib && babel ./config --out-dir ./lib/config  && babel ./src --out-dir ./lib/src",
+    "build": "npm run clean && npm run build-server",
+    "clean": "rm -rf ./lib && mkdir ./lib",
     "prepublish": "npm run build",
     "lint": "./node_modules/.bin/eslint ./src ./test",
     "start": "./node_modules/nodemon/bin/nodemon.js index.js",
