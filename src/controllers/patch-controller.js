@@ -35,6 +35,11 @@ class PatchController extends AbstractCreateController {
 
             logger.info('Finding resource by ' + res.locals.id + ' = ' + id);
 
+            if (!!res.locals.populate) {
+                logger.info('Populating model with the following fields: ', res.locals.populate);
+                query.populate(res.locals.populate);
+            }
+
             query.exec(function(err, result) {
                 if (err) {
                     super.setException(500, err.toString(), next);

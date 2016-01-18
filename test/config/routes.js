@@ -10,6 +10,7 @@ module.exports = {
             endpoint: '/users',
             model: user,
             mapper: userMapper,
+            populate: 'company',
             limit: 20,
             id: '_id',
             methods: {

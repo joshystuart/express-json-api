@@ -5,8 +5,10 @@ const request = require('supertest');
 const db = require('../../utils/db');
 const users = require('../../fixtures/users.json');
 const admins = require('../../fixtures/admins.json');
+const companies = require('../../fixtures/companies.json');
 const User = require('../../models/user');
 const Admin = require('../../models/admin');
+const Company = require('../../models/company');
 const logger = require('../../../src/utils/logger');
 
 describe('Integration Tests', function() {
@@ -19,6 +21,9 @@ describe('Integration Tests', function() {
                 }).
                 then(function() {
                     return db.import(Admin, admins);
+                }).
+                then(function() {
+                    return db.import(Company, companies);
                 }).
                 then(function() {
                     return app.init();
@@ -34,7 +39,8 @@ describe('Integration Tests', function() {
             after(function(done) {
                 q.all([
                     db.removeAll(User),
-                    db.removeAll(Admin)
+                    db.removeAll(Admin),
+                    db.removeAll(Company)
                 ]).
                 then(function() {
                     return app.stop();
@@ -72,6 +78,33 @@ describe('Integration Tests', function() {
                     // data response has been transformed by serializer
                     res.body.data.name.last.should.be.equal('Lovegood');
                     res.body.data.name.first.should.be.equal('Ada');
+                    done();
+                });
+            });
+
+            it('should update an existing resource and populate result', function(done) {
+                const id = users[0]._id;
+                const updates = {
+                    data: {
+                        id: id,
+                        attributes: {
+                            'last-name': 'Brian'
+                        }
+                    }
+                };
+
+                request(app.getExpressApplication()).
+                patch('/users/' + id).
+                set('Content-Type', 'application/json').
+                send(updates).
+                expect(200).
+                end(function(err, res) {
+                    should.not.exist(err);
+
+                    // data response has been transformed by serializer
+                    res.body.data.name.last.should.be.equal('Brian');
+                    res.body.data.name.first.should.be.equal('Sergey');
+                    res.body.data.company.name.should.be.equal('Google');
                     done();
                 });
             });

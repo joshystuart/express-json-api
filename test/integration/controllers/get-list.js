@@ -5,8 +5,10 @@ const request = require('supertest');
 const db = require('../../utils/db');
 const admins = require('../../fixtures/admins.json');
 const users = require('../../fixtures/users.json');
+const companies = require('../../fixtures/companies.json');
 const Admin = require('../../models/admin');
 const User = require('../../models/user');
+const Company = require('../../models/company');
 const logger = require('../../../src/utils/logger');
 
 describe('Integration Tests', function() {
@@ -19,6 +21,9 @@ describe('Integration Tests', function() {
                 }).
                 then(function() {
                     return db.import(Admin, admins);
+                }).
+                then(function() {
+                    return db.import(Company, companies);
                 }).
                 then(function() {
                     return app.init();
@@ -34,7 +39,8 @@ describe('Integration Tests', function() {
             after(function(done) {
                 q.all([
                     db.removeAll(User),
-                    db.removeAll(Admin)
+                    db.removeAll(Admin),
+                    db.removeAll(Company)
                 ]).
                 then(function() {
                     return app.stop();
@@ -77,6 +83,20 @@ describe('Integration Tests', function() {
                     res.body.data[0]['first-name'].should.be.exactly('Elon');
                     res.body.data[0]['last-name'].should.be.exactly('Musk');
                     res.body.meta.should.have.ownProperty('page');
+                    done();
+                });
+            });
+
+            it('should get all user records with populated data', function(done) {
+                request(app.getExpressApplication()).
+                get('/users').
+                set('Content-Type', 'application/json').
+                expect(200).
+                end(function(err, res) {
+                    should.not.exist(err);
+
+                    res.body.data[1].company.name.should.be.exactly('Google');
+                    res.body.data[2].company['legal-name'].should.be.exactly('Luthorcorp Inc.');
                     done();
                 });
             });

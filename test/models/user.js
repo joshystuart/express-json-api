@@ -1,10 +1,10 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-const _ = require('lodash');
-const mongoose = require('mongoose');
-const moment = require('moment');
-const Address = require('./address');
+import _ from 'lodash';
+import mongoose from 'mongoose';
+import moment from 'moment';
+import Address from './address';
 const Schema = mongoose.Schema;
 
 function User() {
@@ -12,6 +12,10 @@ function User() {
         username: String,
         'first-name': String,
         'last-name': String,
+        company: {
+            type: Schema.Types.ObjectId,
+            ref: 'company'
+        },
         address: {type: Address.schema},
         addresses: [Address.schema],
         'created-on': Date

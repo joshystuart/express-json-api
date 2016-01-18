@@ -1,0 +1,20 @@
+[
+    {
+        "_id": "56284fe874db78006c0be6a9",
+        "created-on": "2015-10-22T02:54:12.657Z",
+        "legal-name": "Alphabet Inc.",
+        "name": "Google"
+    },
+    {
+        "_id": "55d1825bea34990700d7ca9d",
+        "created-on": "2015-08-17T06:42:10.842Z",
+        "legal-name": "Telstra & Co",
+        "name": "Telstra"
+    }, 
+    {
+        "_id": "56652f7999882a147dc0bd64",
+        "created-on": "2015-05-18T06:42:10.842Z",
+        "legal-name": "Luthorcorp Inc.",
+        "name": "Luthorcorp"
+    }
+]

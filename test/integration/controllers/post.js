@@ -3,7 +3,12 @@ const q = require('q');
 const app = require('../app');
 const request = require('supertest');
 const db = require('../../utils/db');
+const users = require('../../fixtures/users.json');
+const admins = require('../../fixtures/admins.json');
+const companies = require('../../fixtures/companies.json');
 const User = require('../../models/user');
+const Admin = require('../../models/admin');
+const Company = require('../../models/company');
 const logger = require('../../../src/utils/logger');
 
 describe('Integration Tests', function() {
@@ -11,6 +16,15 @@ describe('Integration Tests', function() {
         describe('Post', function() {
             before(function(done) {
                 db.connect().
+                then(function() {
+                    return db.import(User, users);
+                }).
+                then(function() {
+                    return db.import(Admin, admins);
+                }).
+                then(function() {
+                    return db.import(Company, companies);
+                }).
                 then(function() {
                     return app.init();
                 }).
@@ -25,6 +39,8 @@ describe('Integration Tests', function() {
             after(function(done) {
                 q.all([
                     db.removeAll(User),
+                    db.removeAll(Admin),
+                    db.removeAll(Company)
                 ]).
                 then(function() {
                     return app.stop();

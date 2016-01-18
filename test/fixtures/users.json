@@ -5,6 +5,7 @@
         "username": "sergeybrin",
         "first-name": "Sergey",
         "last-name": "Brin",
+        "company": "56284fe874db78006c0be6a9",
         "address": {
             "line1": "345 Spear Street",
             "city": "San Francisco",
@@ -28,6 +29,7 @@
         "username": "markzuckerberg",
         "first-name": "Mark",
         "last-name": "Zuckerberg",
+        "company": "56652f7999882a147dc0bd64",
         "address": {
             "line1": "1 Hacker Way",
             "city": "Menlo Park",
@@ -51,6 +53,7 @@
         "username": "neilastronaut",
         "first-name": "Neil",
         "last-name": "Armstrong",
+        "company": "55d1825bea34990700d7ca9d",
         "address": {
             "city": "Washington",
             "state": "DC",
