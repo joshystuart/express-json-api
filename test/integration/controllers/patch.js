@@ -1,13 +1,17 @@
-const should = require('should');
-const q = require('q');
-const app = require('../app');
-const request = require('supertest');
-const db = require('../../utils/db');
-const users = require('../../fixtures/users.json');
-const admins = require('../../fixtures/admins.json');
-const User = require('../../models/user');
-const Admin = require('../../models/admin');
-const logger = require('../../../src/utils/logger');
+import q from 'q';
+import app from '../app';
+import should from 'should';
+import request from 'supertest';
+import db from '../../utils/db';
+import logger from '../../../src/utils/logger';
+
+import User from '../../models/user';
+import Admin from '../../models/admin';
+import Company from '../../models/company';
+
+import users from '../../fixtures/users.json';
+import admins from '../../fixtures/admins.json';
+import companies from '../../fixtures/companies.json';
 
 describe('Integration Tests', function() {
     describe('Controllers', function() {
@@ -15,10 +19,11 @@ describe('Integration Tests', function() {
             before(function(done) {
                 db.connect().
                 then(function() {
-                    return db.import(User, users);
-                }).
-                then(function() {
-                    return db.import(Admin, admins);
+                    return q.all([
+                        db.import(User, users),
+                        db.import(Admin, admins),
+                        db.import(Company, companies)
+                    ]);
                 }).
                 then(function() {
                     return app.init();
@@ -34,7 +39,8 @@ describe('Integration Tests', function() {
             after(function(done) {
                 q.all([
                     db.removeAll(User),
-                    db.removeAll(Admin)
+                    db.removeAll(Admin),
+                    db.removeAll(Company)
                 ]).
                 then(function() {
                     return app.stop();
@@ -72,6 +78,33 @@ describe('Integration Tests', function() {
                     // data response has been transformed by serializer
                     res.body.data.name.last.should.be.equal('Lovegood');
                     res.body.data.name.first.should.be.equal('Ada');
+                    done();
+                });
+            });
+
+            it('should update an existing resource and populate result', function(done) {
+                const id = users[0]._id;
+                const updates = {
+                    data: {
+                        id: id,
+                        attributes: {
+                            'last-name': 'Brian'
+                        }
+                    }
+                };
+
+                request(app.getExpressApplication()).
+                patch('/users/' + id).
+                set('Content-Type', 'application/json').
+                send(updates).
+                expect(200).
+                end(function(err, res) {
+                    should.not.exist(err);
+
+                    // data response has been transformed by serializer
+                    res.body.data.name.last.should.be.equal('Brian');
+                    res.body.data.name.first.should.be.equal('Sergey');
+                    res.body.data.company.name.should.be.equal('Google');
                     done();
                 });
             });

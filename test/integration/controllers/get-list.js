@@ -1,13 +1,18 @@
-const should = require('should');
-const q = require('q');
-const app = require('../app');
-const request = require('supertest');
-const db = require('../../utils/db');
-const admins = require('../../fixtures/admins.json');
-const users = require('../../fixtures/users.json');
-const Admin = require('../../models/admin');
-const User = require('../../models/user');
-const logger = require('../../../src/utils/logger');
+import q from 'q';
+import _ from 'lodash';
+import app from '../app';
+import should from 'should';
+import request from 'supertest';
+import db from '../../utils/db';
+import logger from '../../../src/utils/logger';
+
+import User from '../../models/user';
+import Admin from '../../models/admin';
+import Company from '../../models/company';
+
+import users from '../../fixtures/users.json';
+import admins from '../../fixtures/admins.json';
+import companies from '../../fixtures/companies.json';
 
 describe('Integration Tests', function() {
     describe('Controllers', function() {
@@ -15,10 +20,11 @@ describe('Integration Tests', function() {
             before(function(done) {
                 db.connect().
                 then(function() {
-                    return db.import(User, users);
-                }).
-                then(function() {
-                    return db.import(Admin, admins);
+                    return q.all([
+                        db.import(User, users),
+                        db.import(Admin, admins),
+                        db.import(Company, companies)
+                    ]);
                 }).
                 then(function() {
                     return app.init();
@@ -34,7 +40,8 @@ describe('Integration Tests', function() {
             after(function(done) {
                 q.all([
                     db.removeAll(User),
-                    db.removeAll(Admin)
+                    db.removeAll(Admin),
+                    db.removeAll(Company)
                 ]).
                 then(function() {
                     return app.stop();
@@ -78,6 +85,25 @@ describe('Integration Tests', function() {
                     res.body.data[0]['last-name'].should.be.exactly('Musk');
                     res.body.meta.should.have.ownProperty('page');
                     done();
+                });
+            });
+
+            it('should get all user records with populated data', function(done) {
+                request(app.getExpressApplication()).
+                get('/users').
+                set('Content-Type', 'application/json').
+                expect(200).
+                end(function(err, res) {
+                    should.not.exist(err);
+                    _.each(res.body.data, function(user) {
+                        if (user.id === '562d8ac45e5d77d80c478065') {
+                            user.name.first.should.be.exactly('Sergey');
+                            user.name.last.should.be.exactly('Brin');
+                            user.company.name.should.be.exactly('Google');
+                            user.company['legal-name'].should.be.exactly('Alphabet Inc.');
+                            done();
+                        }
+                    });
                 });
             });
 
