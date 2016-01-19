@@ -1,15 +1,17 @@
-const should = require('should');
-const q = require('q');
-const app = require('../app');
-const request = require('supertest');
-const db = require('../../utils/db');
-const admins = require('../../fixtures/admins.json');
-const users = require('../../fixtures/users.json');
-const companies = require('../../fixtures/companies.json');
-const Admin = require('../../models/admin');
-const User = require('../../models/user');
-const Company = require('../../models/company');
-const logger = require('../../../src/utils/logger');
+import q from 'q';
+import app from '../app';
+import should from 'should';
+import request from 'supertest';
+import db from '../../utils/db';
+import logger from '../../../src/utils/logger';
+
+import User from '../../models/user';
+import Admin from '../../models/admin';
+import Company from '../../models/company';
+
+import users from '../../fixtures/users.json';
+import admins from '../../fixtures/admins.json';
+import companies from '../../fixtures/companies.json';
 
 describe('Integration Tests', function() {
     describe('Controllers', function() {
@@ -17,13 +19,11 @@ describe('Integration Tests', function() {
             before(function(done) {
                 db.connect().
                 then(function() {
-                    return db.import(User, users);
-                }).
-                then(function() {
-                    return db.import(Admin, admins);
-                }).
-                then(function() {
-                    return db.import(Company, companies);
+                    return q.all([
+                        db.import(User, users),
+                        db.import(Admin, admins),
+                        db.import(Company, companies)
+                    ]);
                 }).
                 then(function() {
                     return app.init();

@@ -1,7 +1,7 @@
 [
     {
         "_id": "562d8ac45e5d77d80c478065",
-        "role": "User",
+        "role": "user",
         "username": "sergeybrin",
         "first-name": "Sergey",
         "last-name": "Brin",
