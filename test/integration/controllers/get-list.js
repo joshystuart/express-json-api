@@ -96,7 +96,7 @@ describe('Integration Tests', function() {
                 end(function(err, res) {
                     should.not.exist(err);
                     _.each(res.body.data, function(user) {
-                        if ( user.id === '562d8ac45e5d77d80c478065') {
+                        if (user.id === '562d8ac45e5d77d80c478065') {
                             user.name.first.should.be.exactly('Sergey');
                             user.name.last.should.be.exactly('Brin');
                             user.company.name.should.be.exactly('Google');
