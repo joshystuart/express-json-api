@@ -154,7 +154,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should sanitize nested fields', function(done) {
+            it('should sanitize nested object fields', function(done) {
                 const id = admins[0]._id;
                 const updates = {
                     data: {
@@ -181,6 +181,39 @@ describe('Integration Tests', function() {
                     res.body.data['last-name'].should.be.equal('&lt;script>alert("xss")&lt;/script>');
                     res.body.data.address.state.should.be.equal('&lt;script>alert("xss")&lt;/script>');
                     res.body.data.address.city.should.be.equal('Atlantic');
+                    done();
+                });
+            });
+
+            it('should sanitize nested array fields', function(done) {
+                const id = admins[0]._id;
+                const updates = {
+                    data: {
+                        id: id,
+                        attributes: {
+                            'first-name': '<script>Watermelon</script>',
+                            'last-name': '<script>alert("xss")</script>',
+                            acls: [
+                                'users:create',
+                                '<script>alert("read")</script>',
+                                'users:update',
+                                'users:delete'
+                            ]
+                        }
+                    }
+                };
+
+                request(app.getExpressApplication()).
+                patch('/admins/' + id).
+                set('Content-Type', 'application/json').
+                send(updates).
+                expect(200).
+                end(function(err, res) {
+                    should.not.exist(err);
+                    res.body.data['first-name'].should.be.equal('&lt;script>Watermelon&lt;/script>');
+                    res.body.data['last-name'].should.be.equal('&lt;script>alert("xss")&lt;/script>');
+                    res.body.data.acls[0].should.be.equal('users:create');
+                    res.body.data.acls[1].should.be.equal('&lt;script>alert("read")&lt;/script>');
                     done();
                 });
             });

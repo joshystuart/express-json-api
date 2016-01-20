@@ -5,8 +5,8 @@ export default {
     sanitize: function(attribute) {
         if (_.isObject(attribute) && !_.isNull(attribute)) {
             if (_.isArray(attribute)) {
-                attribute.forEach(function(index) {
-                    attribute[index] = filters.inHTMLData(attribute[index]);
+                _.forEach(attribute, function(value, index) {
+                    attribute[index] = filters.inHTMLData(value);
                 });
             } else {
                 _.forEach(_.keys(attribute), function(key) {
