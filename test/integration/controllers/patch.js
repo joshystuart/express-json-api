@@ -154,6 +154,37 @@ describe('Integration Tests', function() {
                 });
             });
 
+            it('should sanitize nested fields', function(done) {
+                const id = admins[0]._id;
+                const updates = {
+                    data: {
+                        id: id,
+                        attributes: {
+                            'first-name': '<script>Watermelon</script>',
+                            'last-name': '<script>alert("xss")</script>',
+                            address: {
+                                state: '<script>alert("xss")</script>',
+                                city: 'Atlantic'
+                            }
+                        }
+                    }
+                };
+
+                request(app.getExpressApplication()).
+                patch('/admins/' + id).
+                set('Content-Type', 'application/json').
+                send(updates).
+                expect(200).
+                end(function(err, res) {
+                    should.not.exist(err);
+                    res.body.data['first-name'].should.be.equal('&lt;script>Watermelon&lt;/script>');
+                    res.body.data['last-name'].should.be.equal('&lt;script>alert("xss")&lt;/script>');
+                    res.body.data.address.state.should.be.equal('&lt;script>alert("xss")&lt;/script>');
+                    res.body.data.address.city.should.be.equal('Atlantic');
+                    done();
+                });
+            });
+
             it('should sanitize selected fields', function(done) {
                 const id = users[0]._id;
                 const updates = {
