@@ -142,7 +142,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should sanitize nested object fields', function(done) {
+            it('should sanitize object fields', function(done) {
                 const insert = {
                     data: {
                         attributes: {
@@ -157,7 +157,7 @@ describe('Integration Tests', function() {
                 };
 
                 request(app.getExpressApplication()).
-                post('/admins/').
+                post('/admins').
                 set('Content-Type', 'application/json').
                 send(insert).
                 expect(200).
@@ -171,7 +171,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should sanitize nested array fields', function(done) {
+            it('should sanitize array fields', function(done) {
                 const insert = {
                     data: {
                         attributes: {
@@ -188,7 +188,7 @@ describe('Integration Tests', function() {
                 };
 
                 request(app.getExpressApplication()).
-                post('/admins/').
+                post('/admins').
                 set('Content-Type', 'application/json').
                 send(insert).
                 expect(200).
@@ -198,6 +198,49 @@ describe('Integration Tests', function() {
                     res.body.data['last-name'].should.be.equal('&lt;script>alert("xss")&lt;/script>');
                     res.body.data.acls[0].should.be.equal('users:create');
                     res.body.data.acls[1].should.be.equal('&lt;script>alert("read")&lt;/script>');
+                    done();
+                });
+            });
+
+            it('should sanitize nested fields', function(done) {
+                const insert = {
+                    data: {
+                        attributes: {
+                            'first-name': '<script>Watermelon</script>',
+                            'last-name': '<script>alert("xss")</script>',
+                            addresses: [
+                                {
+                                    line1: '255 Spear Street',
+                                    city: 'San Francisco',
+                                    state: 'CA',
+                                    postcode: '<script>alert("94105")</script>',
+                                    country: 'USA'
+                                },
+                                {
+                                    line1: '<script>alert("122 Corner Street")</script>',
+                                    city: 'Washington',
+                                    state: 'DC',
+                                    postcode: '2301',
+                                    country: 'USA'
+                                }
+                            ]
+                        }
+                    }
+                };
+
+                request(app.getExpressApplication()).
+                post('/admins').
+                set('Content-Type', 'application/json').
+                send(insert).
+                expect(200).
+                end(function(err, res) {
+                    should.not.exist(err);
+                    res.body.data['first-name'].should.be.equal('&lt;script>Watermelon&lt;/script>');
+                    res.body.data['last-name'].should.be.equal('&lt;script>alert("xss")&lt;/script>');
+                    res.body.data.addresses[0].line1.should.be.equal('255 Spear Street');
+                    res.body.data.addresses[0].postcode.should.be.equal('&lt;script>alert("94105")&lt;/script>');
+                    res.body.data.addresses[1].line1.should.be.equal('&lt;script>alert("122 Corner Street")&lt;/script>'); // eslint-disable-line max-len
+                    res.body.data.addresses[1].postcode.should.be.equal('2301');
                     done();
                 });
             });

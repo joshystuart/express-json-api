@@ -187,7 +187,33 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should sanitize nested object fields', function(done) {
+            it('should sanitize selected fields', function(done) {
+                const id = users[0]._id;
+                const updates = {
+                    data: {
+                        id: id,
+                        attributes: {
+                            'first-name': '<script>Watermelon</script>',
+                            'last-name': '<script>alert("xss")</script>'
+                        }
+                    }
+                };
+
+                request(app.getExpressApplication()).
+                patch('/users/' + id).
+                set('Content-Type', 'application/json').
+                send(updates).
+                expect(200).
+                end(function(err, res) {
+                    should.not.exist(err);
+                    res.body.data.name.first.should.be.equal('&lt;script>Watermelon&lt;/script>');
+                    // last name should not be sanitized as per config
+                    res.body.data.name.last.should.be.equal('<script>alert("xss")</script>');
+                    done();
+                });
+            });
+
+            it('should sanitize object fields', function(done) {
                 const id = admins[0]._id;
                 const updates = {
                     data: {
@@ -218,7 +244,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should sanitize nested array fields', function(done) {
+            it('should sanitize array fields', function(done) {
                 const id = admins[0]._id;
                 const updates = {
                     data: {
@@ -251,28 +277,38 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should sanitize selected fields', function(done) {
-                const id = users[0]._id;
+            it('should sanitize nested fields', function(done) {
+                const id = admins[0]._id;
                 const updates = {
                     data: {
                         id: id,
                         attributes: {
                             'first-name': '<script>Watermelon</script>',
-                            'last-name': '<script>alert("xss")</script>'
+                            'last-name': '<script>alert("xss")</script>',
+                            addresses: [
+                                {
+                                    line1: '255 Spear Street',
+                                    city: 'San Francisco',
+                                    state: 'CA',
+                                    postcode: '<script>alert("94105")</script>',
+                                    country: 'USA'
+                                }
+                            ]
                         }
                     }
                 };
 
                 request(app.getExpressApplication()).
-                patch('/users/' + id).
+                patch('/admins/' + id).
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
                 end(function(err, res) {
                     should.not.exist(err);
-                    res.body.data.name.first.should.be.equal('&lt;script>Watermelon&lt;/script>');
-                    // last name should not be sanitized as per config
-                    res.body.data.name.last.should.be.equal('<script>alert("xss")</script>');
+                    res.body.data['first-name'].should.be.equal('&lt;script>Watermelon&lt;/script>');
+                    res.body.data['last-name'].should.be.equal('&lt;script>alert("xss")&lt;/script>');
+                    res.body.data.addresses[0].line1.should.be.equal('255 Spear Street');
+                    res.body.data.addresses[0].postcode.should.be.equal('&lt;script>alert("94105")&lt;/script>');
                     done();
                 });
             });
