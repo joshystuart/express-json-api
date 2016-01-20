@@ -313,6 +313,62 @@ describe('Integration Tests', function() {
                 });
             });
 
+            it('should not sanitize boolean fields', function(done) {
+                const id = admins[0]._id;
+                const updates = {
+                    data: {
+                        id: id,
+                        attributes: {
+                            'first-name': '<script>Watermelon</script>',
+                            'last-name': '<script>alert("xss")</script>',
+                            active: true
+                        }
+                    }
+                };
+
+                request(app.getExpressApplication()).
+                patch('/managers/' + id).
+                set('Content-Type', 'application/json').
+                send(updates).
+                expect(200).
+                end(function(err, res) {
+                    should.not.exist(err);
+                    res.body.data['first-name'].should.be.equal('<script>Watermelon</script>');
+                    res.body.data['last-name'].should.be.equal('<script>alert("xss")</script>');
+                    res.body.data.active.should.not.be.equal('true');
+                    res.body.data.active.should.be.equal(true);
+                    done();
+                });
+            });
+
+            it('should not sanitize numeric fields', function(done) {
+                const id = admins[0]._id;
+                const updates = {
+                    data: {
+                        id: id,
+                        attributes: {
+                            'first-name': '<script>Watermelon</script>',
+                            'last-name': '<script>alert("xss")</script>',
+                            age: 24
+                        }
+                    }
+                };
+
+                request(app.getExpressApplication()).
+                patch('/managers/' + id).
+                set('Content-Type', 'application/json').
+                send(updates).
+                expect(200).
+                end(function(err, res) {
+                    should.not.exist(err);
+                    res.body.data['first-name'].should.be.equal('<script>Watermelon</script>');
+                    res.body.data['last-name'].should.be.equal('<script>alert("xss")</script>');
+                    res.body.data.active.should.not.be.equal('24');
+                    res.body.data.age.should.be.equal(24);
+                    done();
+                });
+            });
+
             it('should not sanitize when it is inactive', function(done) {
                 const id = admins[0]._id;
                 const updates = {
