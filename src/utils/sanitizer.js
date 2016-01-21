@@ -1,22 +1,30 @@
 import filters from 'xss-filters';
 import _ from 'lodash';
 
-export default {
-    sanitize: function(attribute) {
-        if (_.isObject(attribute) && !_.isNull(attribute)) {
-            if (_.isArray(attribute)) {
-                _.forEach(attribute, function(value, index) {
-                    attribute[index] = filters.inHTMLData(value);
-                });
-            } else {
-                _.forEach(_.keys(attribute), function(key) {
-                    attribute[key] = filters.inHTMLData(attribute[key]);
-                });
-            }
+const sanitize = (attribute) => {
+    if (!attribute || _.isBoolean(attribute) || _.isNumber(attribute)) {
+        return attribute;
+    }
 
-            return attribute;
+    if (_.isObject(attribute)) {
+        if (_.isArray(attribute)) {
+            _.forEach(attribute, (value, index) => {
+                attribute[index] = sanitize(value);
+            });
+        } else {
+            _.forEach(_.keys(attribute), (key) => {
+                attribute[key] = sanitize(attribute[key]);
+            });
         }
 
-        return filters.inHTMLData(attribute);
+        return attribute;
     }
+
+    return filters.inHTMLData(attribute);
 };
+
+export default {
+    sanitize: sanitize
+};
+
+

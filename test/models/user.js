@@ -18,7 +18,9 @@ function User() {
         },
         address: {type: Address.schema},
         addresses: [Address.schema],
-        'created-on': Date
+        'created-on': Date,
+        active: Boolean,
+        age: Number
     }, {
         collection: 'users',
         discriminatorKey: 'role'
