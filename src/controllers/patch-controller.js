@@ -71,13 +71,13 @@ class PatchController extends AbstractCreateController {
 
             updatedResource.save(function(error) {
                 if (error) {
-                    this.setException(404, 'Error on model save: ' + err.toString(), next);
+                    super.setException(404, 'Error on model save: ' + error.toString(), next);
                 }
                 res.locals.resource = resource;
                 next();
             });
         } else {
-            this.setException(404, 'Record not found', next);
+            super.setException(404, 'Record not found', next);
         }
     }
 }
