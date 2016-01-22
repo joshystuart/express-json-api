@@ -39,6 +39,7 @@ class AbstractRoute {
         res.locals.limit = config.limit;
         res.locals.sanitize = config.sanitize;
         res.locals.search = config.search;
+        res.locals.metadata = config.metadata;
     }
 }
 
