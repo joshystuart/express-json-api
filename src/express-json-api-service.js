@@ -22,9 +22,9 @@ class ExpressJsonApiService {
      */
     createRoutes(app, routes) {
         // iterate through all configured routes
-        _.forEach(routes, function(route) {
+        _.forEach(routes, (route) => {
             this.createRoute(app, route);
-        }.bind(this));
+        });
     }
 
     /**
@@ -38,7 +38,7 @@ class ExpressJsonApiService {
         const router = express.Router(); // eslint-disable-line new-cap
         app.use(routeConfig.endpoint, router);
 
-        _.forEach(routeConfig.methods, function(middleware, method) {
+        _.forEach(routeConfig.methods, (middleware, method) => {
             let route;
             switch (method) {
                 case 'get':
@@ -73,6 +73,6 @@ class ExpressJsonApiService {
 export default ExpressJsonApiService;
 export const controllers = allControllers;
 // for es5 backwards compatibility instead of using ExpressJsonApiService.factory(app, config).
-export const factory = function(app, config) {
+export const factory = (app, config) => {
     return new ExpressJsonApiService(app, config);
 };

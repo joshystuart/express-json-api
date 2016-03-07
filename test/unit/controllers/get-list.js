@@ -1,32 +1,32 @@
-require('should');
-const sinon = require('sinon');
-const db = require('../../utils/db');
-const User = require('../../models/user');
-const users = require('../../fixtures/users.json');
-const getList = require('../../../src/controllers/get-list-controller');
+import 'should';
+import sinon from 'sinon';
+import db from '../../utils/db';
+import User from '../../models/user';
+import users from '../../fixtures/users.json';
+import * as getList from '../../../src/controllers/get-list-controller';
 
-describe('Unit Tests', function() {
-    describe('Controllers', function() {
-        describe('Get-list', function() {
-            before(function(done) {
+describe('Unit Tests', () => {
+    describe('Controllers', () => {
+        describe('Get-list', () => {
+            before((done) => {
                 db.connect().
-                then(function() {
+                then(() => {
                     return db.import(User, users);
                 }).
-                then(function() {
+                then(() => {
                     done();
                 });
             });
 
-            after(function(done) {
+            after((done) => {
                 db.removeAll(User).
-                then(function() {
+                then(() => {
                     db.disconnect();
                     done();
                 });
             });
 
-            it('should create `search` criteria then call next()', function(done) {
+            it('should create `search` criteria then call next()', (done) => {
                 const req = {
                     query: {
                         q: 'Elon'
@@ -50,7 +50,7 @@ describe('Unit Tests', function() {
                 done();
             });
 
-            it('should create `query` then call next() ', function(done) {
+            it('should create `query` then call next() ', (done) => {
                 const req = {};
                 const res = {
                     locals: {
@@ -64,7 +64,7 @@ describe('Unit Tests', function() {
                 done();
             });
 
-            it('should `filter` then call next() ', function(done) {
+            it('should `filter` then call next() ', (done) => {
                 const req = {
                     query: {
                         filter: 'first-name'
@@ -82,7 +82,7 @@ describe('Unit Tests', function() {
                 done();
             });
 
-            it('should `sort` then call next() ', function(done) {
+            it('should `sort` then call next() ', (done) => {
                 const req = {
                     query: {
                         sort: 'first-name'
@@ -101,7 +101,7 @@ describe('Unit Tests', function() {
                 done();
             });
 
-            it('should create `page` then call next() ', function(done) {
+            it('should create `page` then call next() ', (done) => {
                 const total = 100;
                 const req = {
                     query: {
@@ -115,7 +115,7 @@ describe('Unit Tests', function() {
                     locals: {
                         model: User,
                         query: {
-                            count: function(cb) {
+                            count: (cb) => {
                                 cb(null, total);
                             },
                             skip: function() {
@@ -137,7 +137,7 @@ describe('Unit Tests', function() {
                 done();
             });
 
-            it('should `render` response object in json ', function(done) {
+            it('should `render` response object in json ', (done) => {
                 const req = {};
                 const res = {
                     locals: {
@@ -146,13 +146,13 @@ describe('Unit Tests', function() {
                         },
                         resources: users[0]
                     },
-                    json: function(response) {
+                    json: (response) => {
                         response.meta.page.total.should.be.equal(1);
                         response.data.username.should.be.equal('sergeybrin');
                         done();
                     }
                 };
-                const next = function() {
+                const next = () => {
                 };
 
                 getList.render(req, res, next);

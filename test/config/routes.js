@@ -1,7 +1,7 @@
-const user = require('../models/user');
-const admin = require('../models/admin');
-const userMapper = require('../models/mappers/user');
-const sanitizer = require('../../src/utils/sanitizer');
+import user from '../models/user';
+import admin from '../models/admin';
+import userMapper from '../models/mappers/user';
+import sanitizer from '../../src/utils/sanitizer';
 import * as controllers from '../../src/controllers.js';
 
 module.exports = {

@@ -1,9 +1,9 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-const _ = require('lodash');
-const mongoose = require('mongoose');
-const moment = require('moment');
+import _ from 'lodash';
+import mongoose from 'mongoose';
+import moment from 'moment';
 const Schema = mongoose.Schema;
 
 function Address() {
@@ -20,7 +20,7 @@ function Address() {
     });
 
     // prior to save do this
-    AddressSchema.pre('save', function(next) {
+    AddressSchema.pre('save', (next) => {
         if (!_.isDate(this['created-on'])) {
             this['created-on'] = moment();
         }

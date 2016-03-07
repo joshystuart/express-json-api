@@ -27,14 +27,14 @@ function User() {
     });
 
     // prior to save do this
-    UserSchema.pre('save', function(next) {
+    UserSchema.pre('save', (next) => {
         if (!_.isDate(this['created-on'])) {
             this['created-on'] = moment();
         }
         next();
     });
 
-    UserSchema.methods.getFullName = function() {
+    UserSchema.methods.getFullName = () => {
         return this['first-name'] + ' ' + this['last-name'];
     };
 

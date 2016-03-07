@@ -12,7 +12,7 @@ class PatchController extends AbstractCreateController {
         if (!!req.body.data && !!req.body.data.id && !!req.body.data.attributes) {
             next();
         } else {
-            super.setException(400, 'Request failed validation', next);
+            super.setException(400, `Request failed validation`, next);
         }
     }
 
@@ -33,18 +33,18 @@ class PatchController extends AbstractCreateController {
             criteria[res.locals.id] = id;
             const query = model.findOne(criteria);
 
-            logger.info('Finding resource by ' + res.locals.id + ' = ' + id);
+            logger.info(`Finding resource by ${res.locals.id} = ${id}`);
 
             if (!!res.locals.populate) {
-                logger.info('Populating model with the following fields: ', res.locals.populate);
+                logger.info(`Populating model with the following fields: ${res.locals.populate}`);
                 query.populate(res.locals.populate);
             }
 
-            query.exec(function(err, result) {
+            query.exec((err, result) => {
                 if (err) {
                     super.setException(500, err.toString(), next);
                 } else if (!result) {
-                    super.setException(404, 'Record not found', next);
+                    super.setException(404, `Record not found`, next);
                 } else {
                     res.locals.resource = result;
                     next();
@@ -69,15 +69,27 @@ class PatchController extends AbstractCreateController {
         if (!!resource) {
             const updatedResource = _.merge(resource, updates);
 
-            updatedResource.save(function(error) {
+            updatedResource.save((error) => {
                 if (error) {
-                    super.setException(404, 'Error on model save: ' + error.toString(), next);
+                    super.setException(404, `Error on model save: ${error.toString()}`, next);
+                } else {
+                    res.locals.resource = updatedResource;
+
+                    if (!!res.locals.populate) {
+                        updatedResource.populate(res.locals.populate, (populateError) => {
+                            if (error) {
+                                super.setException(404, `Error on model populate: ${populateError.toString()}`, next);
+                            } else {
+                                next();
+                            }
+                        });
+                    } else {
+                        next();
+                    }
                 }
-                res.locals.resource = resource;
-                next();
             });
         } else {
-            super.setException(404, 'Record not found', next);
+            super.setException(404, `Record not found`, next);
         }
     }
 }

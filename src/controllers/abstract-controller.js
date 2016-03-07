@@ -9,7 +9,7 @@ import logger from '../utils/logger.js';
  */
 class AbstractController {
     static setModelNotFoundException(next) {
-        this.setException(500, 'Target Model Not Found', next);
+        this.setException(500, `Target Model Not Found`, next);
     }
 
     static setException(status, message, next) {
@@ -37,7 +37,7 @@ class AbstractController {
 
             // if we have multiple resources
             if (!!res.locals.resources) {
-                _.forEach(res.locals.resources, function(model) {
+                _.forEach(res.locals.resources, (model) => {
                     serializedResults.push(mapper.serialize(model));
                 });
 

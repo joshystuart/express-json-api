@@ -2,7 +2,7 @@ function UserSerializer() {
 
 }
 
-UserSerializer.prototype.serialize = function(model) {
+UserSerializer.prototype.serialize = (model) => {
     return {
         id: model._id,
         name: {

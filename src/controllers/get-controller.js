@@ -21,7 +21,7 @@ class GetController extends AbstractReadController {
                 res.locals.query = res.locals.model.findOne(criteria);
                 next();
             } else {
-                super.setException(400, 'Incorrect Parameter', next);
+                super.setException(400, `Incorrect Parameter`, next);
             }
         } else {
             super.setModelNotFoundException(next);
@@ -40,11 +40,11 @@ class GetController extends AbstractReadController {
 
         if (!!resQuery) {
             resQuery.lean();
-            resQuery.exec('findOne', function(err, result) {
+            resQuery.exec('findOne', (err, result) => {
                 if (err) {
                     next(err);
                 } else if (!result) {
-                    super.setException(404, 'Resource not found', next);
+                    super.setException(404, `Resource not found`, next);
                 } else {
                     res.locals.resource = result;
                     next();
@@ -66,7 +66,7 @@ class GetController extends AbstractReadController {
         const resource = res.locals.resource;
 
         if (typeof(resource) === 'undefined') {
-            super.setException(500, 'Nothing to render', next);
+            super.setException(500, `Nothing to render`, next);
         }
 
         // send the data back to the client

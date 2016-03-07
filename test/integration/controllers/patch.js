@@ -13,50 +13,50 @@ import users from '../../fixtures/users.json';
 import admins from '../../fixtures/admins.json';
 import companies from '../../fixtures/companies.json';
 
-describe('Integration Tests', function() {
-    describe('Controllers', function() {
-        describe('Patch', function() {
-            before(function(done) {
+describe('Integration Tests', () => {
+    describe('Controllers', () => {
+        describe('Patch', () => {
+            before((done) => {
                 db.connect().
-                then(function() {
+                then(() => {
                     return q.all([
                         db.import(User, users),
                         db.import(Admin, admins),
                         db.import(Company, companies)
                     ]);
                 }).
-                then(function() {
+                then(() => {
                     return app.init();
                 }).
-                then(function() {
+                then(() => {
                     done();
                 }).
-                fail(function(err) {
+                fail((err) => {
                     logger.error(err);
                 });
             });
 
-            after(function(done) {
+            after((done) => {
                 q.all([
                     db.removeAll(User),
                     db.removeAll(Admin),
                     db.removeAll(Company)
                 ]).
-                then(function() {
+                then(() => {
                     return app.stop();
                 }).
-                then(function() {
+                then(() => {
                     return db.disconnect();
                 }).
-                then(function() {
+                then(() => {
                     done();
                 }).
-                fail(function(err) {
+                fail((err) => {
                     logger.error(err);
                 });
             });
 
-            it('should update an existing resource', function(done) {
+            it('should update an existing resource', (done) => {
                 const id = users[3]._id;
                 const updates = {
                     data: {
@@ -72,7 +72,7 @@ describe('Integration Tests', function() {
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
-                end(function(err, res) {
+                end((err, res) => {
                     should.not.exist(err);
 
                     // data response has been transformed by serializer
@@ -82,7 +82,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should update an existing resource and populate result', function(done) {
+            it('should update an existing resource and populate result', (done) => {
                 const id = users[0]._id;
                 const updates = {
                     data: {
@@ -98,7 +98,7 @@ describe('Integration Tests', function() {
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
-                end(function(err, res) {
+                end((err, res) => {
                     should.not.exist(err);
 
                     // data response has been transformed by serializer
@@ -109,7 +109,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should return http 404 when updating a missing record', function(done) {
+            it('should return http 404 when updating a missing record', (done) => {
                 const id = '5630743e2446a0672a4ee793';
                 const updates = {
                     data: {
@@ -127,7 +127,7 @@ describe('Integration Tests', function() {
                 expect(404, done);
             });
 
-            it('should return http 400 if `attributes` are missing', function(done) {
+            it('should return http 400 if `attributes` are missing', (done) => {
                 const id = users[0]._id;
                 const updates = {
                     data: {
@@ -145,7 +145,7 @@ describe('Integration Tests', function() {
                 expect(400, done);
             });
 
-            it('should return http 400 if `id` is missing', function(done) {
+            it('should return http 400 if `id` is missing', (done) => {
                 const id = users[0]._id;
                 const updates = {
                     data: {
@@ -162,7 +162,7 @@ describe('Integration Tests', function() {
                 expect(400, done);
             });
 
-            it('should sanitize all fields', function(done) {
+            it('should sanitize all fields', (done) => {
                 const id = admins[0]._id;
                 const updates = {
                     data: {
@@ -179,7 +179,7 @@ describe('Integration Tests', function() {
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
-                end(function(err, res) {
+                end((err, res) => {
                     should.not.exist(err);
                     res.body.data['first-name'].should.be.equal('&lt;script>Watermelon&lt;/script>');
                     res.body.data['last-name'].should.be.equal('&lt;script>alert("xss")&lt;/script>');
@@ -187,7 +187,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should sanitize selected fields', function(done) {
+            it('should sanitize selected fields', (done) => {
                 const id = users[0]._id;
                 const updates = {
                     data: {
@@ -204,7 +204,7 @@ describe('Integration Tests', function() {
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
-                end(function(err, res) {
+                end((err, res) => {
                     should.not.exist(err);
                     res.body.data.name.first.should.be.equal('&lt;script>Watermelon&lt;/script>');
                     // last name should not be sanitized as per config
@@ -213,7 +213,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should sanitize object fields', function(done) {
+            it('should sanitize object fields', (done) => {
                 const id = admins[0]._id;
                 const updates = {
                     data: {
@@ -234,7 +234,7 @@ describe('Integration Tests', function() {
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
-                end(function(err, res) {
+                end((err, res) => {
                     should.not.exist(err);
                     res.body.data['first-name'].should.be.equal('&lt;script>Watermelon&lt;/script>');
                     res.body.data['last-name'].should.be.equal('&lt;script>alert("xss")&lt;/script>');
@@ -244,7 +244,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should sanitize array fields', function(done) {
+            it('should sanitize array fields', (done) => {
                 const id = admins[0]._id;
                 const updates = {
                     data: {
@@ -267,7 +267,7 @@ describe('Integration Tests', function() {
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
-                end(function(err, res) {
+                end((err, res) => {
                     should.not.exist(err);
                     res.body.data['first-name'].should.be.equal('&lt;script>Watermelon&lt;/script>');
                     res.body.data['last-name'].should.be.equal('&lt;script>alert("xss")&lt;/script>');
@@ -277,7 +277,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should sanitize nested fields', function(done) {
+            it('should sanitize nested fields', (done) => {
                 const id = admins[0]._id;
                 const updates = {
                     data: {
@@ -303,7 +303,7 @@ describe('Integration Tests', function() {
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
-                end(function(err, res) {
+                end((err, res) => {
                     should.not.exist(err);
                     res.body.data['first-name'].should.be.equal('&lt;script>Watermelon&lt;/script>');
                     res.body.data['last-name'].should.be.equal('&lt;script>alert("xss")&lt;/script>');
@@ -313,7 +313,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should not sanitize boolean fields', function(done) {
+            it('should not sanitize boolean fields', (done) => {
                 const id = admins[0]._id;
                 const updates = {
                     data: {
@@ -331,7 +331,7 @@ describe('Integration Tests', function() {
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
-                end(function(err, res) {
+                end((err, res) => {
                     should.not.exist(err);
                     res.body.data['first-name'].should.be.equal('<script>Watermelon</script>');
                     res.body.data['last-name'].should.be.equal('<script>alert("xss")</script>');
@@ -341,7 +341,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should not sanitize numeric fields', function(done) {
+            it('should not sanitize numeric fields', (done) => {
                 const id = admins[0]._id;
                 const updates = {
                     data: {
@@ -359,7 +359,7 @@ describe('Integration Tests', function() {
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
-                end(function(err, res) {
+                end((err, res) => {
                     should.not.exist(err);
                     res.body.data['first-name'].should.be.equal('<script>Watermelon</script>');
                     res.body.data['last-name'].should.be.equal('<script>alert("xss")</script>');
@@ -369,7 +369,7 @@ describe('Integration Tests', function() {
                 });
             });
 
-            it('should not sanitize when it is inactive', function(done) {
+            it('should not sanitize when it is inactive', (done) => {
                 const id = admins[0]._id;
                 const updates = {
                     data: {
@@ -386,7 +386,7 @@ describe('Integration Tests', function() {
                 set('Content-Type', 'application/json').
                 send(updates).
                 expect(200).
-                end(function(err, res) {
+                end((err, res) => {
                     should.not.exist(err);
                     res.body.data['first-name'].should.be.equal('<script>Watermelon</script>');
                     res.body.data['last-name'].should.be.equal('<script>alert("xss")</script>');

@@ -16,12 +16,12 @@ class AbstractRoute {
      * @param middleware
      */
     addPathToRouter(path, method, router, config, middleware) {
-        router[method](path, function(req, res, next) {
+        router[method](path, (req, res, next) => {
             // apply target
             this.setRouteConfigOnResponse(config, req, res);
 
             next();
-        }.bind(this), middleware);
+        }, middleware);
     }
 
     /**

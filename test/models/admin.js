@@ -1,8 +1,8 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-const mongoose = require('mongoose');
-const User = require('./user');
+import mongoose from 'mongoose';
+import User from './user';
 const Schema = mongoose.Schema;
 
 function Admin() {
