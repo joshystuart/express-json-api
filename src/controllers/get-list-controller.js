@@ -21,11 +21,9 @@ class GetListController extends AbstractReadController {
             res.locals.query = model.find(criteria);
 
             if (!!res.locals.populate) {
-                logger.info('Populating model with the following fields: ', res.locals.populate);
+                logger.info(`Populating model with the following fields: ${res.locals.populate}`);
                 res.locals.query = res.locals.query.populate(res.locals.populate);
             }
-
-            res.locals.query.lean();
 
             next();
         } else {
@@ -50,16 +48,16 @@ class GetListController extends AbstractReadController {
             if (!!config && !!config.active && !!param) {
                 const terms = param.trim().split(' ');
                 const matchingExpressions = terms.
-                filter(function(term) {
+                filter((term) => {
                     if (!_.isEmpty(term)) {
                         return term;
                     }
                 }).
-                map(function(term) {
+                map((term) => {
                     return new RegExp(term.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'), 'i');
                 });
 
-                _.forEach(config.fields, function(fieldName) {
+                _.forEach(config.fields, (fieldName) => {
                     const field = {};
                     field[fieldName] = {$in: matchingExpressions};
                     criterion.$or.push(field);
@@ -69,7 +67,7 @@ class GetListController extends AbstractReadController {
             if (criterion.$or.length > 0) {
                 res.locals.criteria = _.extend(criteria, criterion);
 
-                logger.info('Setting search criteria: ', criterion);
+                logger.info(`Setting search criteria: ${criterion}`);
             }
             next();
         } else {
@@ -93,7 +91,7 @@ class GetListController extends AbstractReadController {
             const schema = model.schema;
 
             if (!!req.query.filter) {
-                _.forEach(req.query.filter, function(value, key) {
+                _.forEach(req.query.filter, (value, key) => {
                     if (!!schema.path(key)) {
                         const field = {};
 
@@ -112,7 +110,7 @@ class GetListController extends AbstractReadController {
 
             if (criterion.$and.length > 0) {
                 res.locals.criteria = _.extend(criteria, criterion);
-                logger.info('Setting filter criteria: ', criterion);
+                logger.info(`Setting filter criteria: ${criterion}`);
             }
             next();
         } else {
@@ -136,11 +134,11 @@ class GetListController extends AbstractReadController {
             if (!!req.query.sort) {
                 const sorts = req.query.sort.split(',');
 
-                _.forEach(sorts, function(sortItem) {
+                _.forEach(sorts, (sortItem) => {
                     // remove the descending term to find if the property exists on the model/schema.
                     const field = _.trimLeft(sortItem, '-');
                     if (!!schema.path(field)) {
-                        logger.info('Applying sort by: ' + sortItem);
+                        logger.info(`Applying sort by: ${sortItem}`);
                         resQuery.sort(sortItem);
                     }
                 });
@@ -163,6 +161,9 @@ class GetListController extends AbstractReadController {
         const resQuery = res.locals.query;
 
         if (!!resQuery) {
+            // we always set the paging query to lean because we want it fast.
+            resQuery.lean(true);
+
             if (!req.query.page) {
                 req.query.page = {};
             }
@@ -176,7 +177,7 @@ class GetListController extends AbstractReadController {
             }
 
             // run the query to get the total
-            resQuery.count(function(err, total) {
+            resQuery.count((err, total) => {
                 // set the page on the response
                 res.locals.page = {
                     total: _.round(total),
@@ -184,8 +185,8 @@ class GetListController extends AbstractReadController {
                     offset: _.round(req.query.page.offset)
                 };
 
-                logger.info('Applying offset: ' + res.locals.page.offset);
-                logger.info('Applying limit: ' + res.locals.page.limit);
+                logger.info(`Applying offset: ${res.locals.page.offset}`);
+                logger.info(`Applying limit: ${res.locals.page.limit}`);
 
                 // reset and add limits
                 resQuery.skip(res.locals.page.offset).
@@ -194,7 +195,7 @@ class GetListController extends AbstractReadController {
                 next(err);
             });
         } else {
-            this.setException(500, 'Query Not Found', next);
+            this.setException(500, `Query Not Found`, next);
         }
     }
 
@@ -209,14 +210,16 @@ class GetListController extends AbstractReadController {
         const resQuery = res.locals.query;
 
         if (!!resQuery) {
-            resQuery.lean();
-            resQuery.exec('find', function(err, results) {
-                if (err) {
-                    next(err);
-                } else {
-                    res.locals.resources = results;
-                    next();
-                }
+            resQuery.lean(res.locals.lean);
+
+            logger.info(`Performing query`);
+
+            resQuery.exec('find').
+            then((results)=> {
+                res.locals.resources = results;
+                next();
+            }, (err) => {
+                next(err);
             });
         } else {
             super.setModelNotFoundException(next);
@@ -228,12 +231,13 @@ class GetListController extends AbstractReadController {
      *
      * @param req
      * @param res
+     * @param next
      */
     static render(req, res, next) {
         const resources = res.locals.resources;
 
         if (typeof(resources) === 'undefined') {
-            this.setException(500, 'Nothing to render', next);
+            this.setException(500, `Nothing to render`, next);
         }
 
         // send the data back to the client

@@ -1,32 +1,32 @@
-require('should');
-const sinon = require('sinon');
-const db = require('../../utils/db');
-const User = require('../../models/user');
-const users = require('../../fixtures/users.json');
-const patch = require('../../../src/controllers/patch-controller');
+import 'should';
+import sinon from 'sinon';
+import db from '../../utils/db';
+import User from '../../models/user';
+import users from '../../fixtures/users.json';
+import * as patch from '../../../src/controllers/patch-controller';
 
-describe('Unit Tests', function() {
-    describe('Controllers', function() {
-        describe('Patch', function() {
-            before(function(done) {
+describe('Unit Tests', () => {
+    describe('Controllers', () => {
+        describe('Patch', () => {
+            before((done) => {
                 db.connect().
-                then(function() {
+                then(() => {
                     return db.import(User, users);
                 }).
-                then(function() {
+                then(() => {
                     done();
                 });
             });
 
-            after(function(done) {
+            after((done) => {
                 db.removeAll(User).
-                then(function() {
+                then(() => {
                     db.disconnect();
                     done();
                 });
             });
 
-            it('should `validate` with correct params then call next()', function(done) {
+            it('should `validate` with correct params then call next()', (done) => {
                 const req = {
                     body: {
                         data: {
@@ -49,7 +49,7 @@ describe('Unit Tests', function() {
                 done();
             });
 
-            it('should `validate` with missing data.attributes then call next(err)', function(done) {
+            it('should `validate` with missing data.attributes then call next(err)', (done) => {
                 const req = {
                     body: {
                         data: {
@@ -63,7 +63,7 @@ describe('Unit Tests', function() {
 
                 patch.validate(req, res, next);
 
-                const calledWithErrors = next.calledWithMatch(function(err) {
+                const calledWithErrors = next.calledWithMatch((err) => {
                     return typeof(err) !== 'undefined' && err.status === 400;
                 });
 
@@ -72,7 +72,7 @@ describe('Unit Tests', function() {
                 done();
             });
 
-            it('should `validate` with missing data.id then call next(err)', function(done) {
+            it('should `validate` with missing data.id then call next(err)', (done) => {
                 const req = {
                     body: {
                         data: {
@@ -88,7 +88,7 @@ describe('Unit Tests', function() {
 
                 patch.validate(req, res, next);
 
-                const calledWithErrors = next.calledWithMatch(function(err) {
+                const calledWithErrors = next.calledWithMatch((err) => {
                     return typeof(err) !== 'undefined' && err.status === 400;
                 });
 
@@ -97,7 +97,7 @@ describe('Unit Tests', function() {
                 done();
             });
 
-            it('should `find` then call next() and pass results', function(done) {
+            it('should `find` then call next() and pass results', (done) => {
                 const req = {
                     params: {
                         _id: users[0]._id
@@ -118,7 +118,7 @@ describe('Unit Tests', function() {
                         model: User
                     }
                 };
-                const next = function() {
+                const next = () => {
                     res.locals.resource.username.should.be.equal('sergeybrin');
                     done();
                 };
@@ -126,7 +126,7 @@ describe('Unit Tests', function() {
                 patch.find(req, res, next);
             });
 
-            it('should `update` then update existing record and pass results', function(done) {
+            it('should `update` then update existing record and pass results', (done) => {
                 const req = {
                     body: {
                         data: {
@@ -143,10 +143,10 @@ describe('Unit Tests', function() {
                 };
 
                 const query = User.findOne({_id: users[0]._id});
-                query.exec(function(err, user) {
+                query.exec((err, user) => {
                     res.locals.resource = user;
 
-                    const next = function() {
+                    const next = () => {
                         res.locals.resource['first-name'].should.be.equal('Arnold');
                         done();
                     };
@@ -155,7 +155,7 @@ describe('Unit Tests', function() {
                 });
             });
 
-            it('should `serialize` then transform response', function(done) {
+            it('should `serialize` then transform response', (done) => {
                 const req = {};
                 const res = {
                     locals: {
@@ -167,7 +167,7 @@ describe('Unit Tests', function() {
                             _id: '562f20dae5170edf1ca31b0f'
                         },
                         mapper: {
-                            serialize: function(model) {
+                            serialize: (model) => {
                                 return {
                                     name: {
                                         first: model['first-name'],
@@ -184,7 +184,7 @@ describe('Unit Tests', function() {
                     }
                 };
 
-                const next = function() {
+                const next = () => {
                     const resource = res.locals.resource;
                     resource.name.first.should.be.equal('Neil');
                     resource.name.last.should.be.equal('Armstrong');
@@ -194,7 +194,7 @@ describe('Unit Tests', function() {
                 patch.serialize(req, res, next);
             });
 
-            it('should `render` then return response object in json', function(done) {
+            it('should `render` then return response object in json', (done) => {
                 const req = {};
                 const res = {
                     locals: {
@@ -206,13 +206,13 @@ describe('Unit Tests', function() {
                             _id: '562f20dae5170edf1ca31b0f'
                         }
                     },
-                    json: function(response) {
+                    json: (response) => {
                         response.meta.page.total.should.be.equal(1);
                         response.data.username.should.be.equal('neilastronaut');
                         done();
                     }
                 };
-                const next = function() {
+                const next = () => {
                 };
 
                 patch.render(req, res, next);

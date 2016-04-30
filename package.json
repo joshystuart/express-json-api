@@ -1,7 +1,7 @@
 {
   "name": "express-json-api",
   "description": "The quickest way to create a RESTful api from your mongoose models using the express router and jsonapi.org standards.",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "main": "./lib/index.js",
   "author": "Josh Stuart <joshstuartx@gmail.com>",
   "keywords": [
@@ -19,6 +19,11 @@
     "type": "git",
     "url": "https://github.com/crimsonronin/express-json-api.git"
   },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
   "scripts": {
     "build-server": "babel ./index.js --out-dir ./lib && babel ./config --out-dir ./lib/config  && babel ./src --out-dir ./lib/src",
     "build": "npm run clean && npm run build-server",
@@ -26,10 +31,10 @@
     "prepublish": "npm run build",
     "lint": "./node_modules/.bin/eslint ./src ./test",
     "start": "./node_modules/nodemon/bin/nodemon.js index.js",
-    "unit-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage/unit ./node_modules/.bin/_mocha ./test/unit",
-    "integration-tests": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage/integration ./node_modules/.bin/_mocha ./test/integration",
+    "unit-tests": "NODE_ENV=test babel-node ./node_modules/istanbul/lib/cli cover --dir coverage/unit ./node_modules/.bin/_mocha ./test/unit",
+    "integration-tests": "NODE_ENV=test babel-node ./node_modules/istanbul/lib/cli cover --dir coverage/integration ./node_modules/.bin/_mocha ./test/integration",
     "pretest": "npm run-script lint",
-    "test": "NODE_ENV=test ./node_modules/.bin/istanbul cover --dir coverage ./node_modules/.bin/_mocha ./test/unit ./test/integration"
+    "test": "NODE_ENV=test babel-node ./node_modules/istanbul/lib/cli cover --dir coverage ./node_modules/.bin/_mocha ./test/unit ./test/integration"
   },
   "dependencies": {
     "express": "^4.13.3",
@@ -40,16 +45,19 @@
     "xss-filters": "^1.2.6"
   },
   "devDependencies": {
-    "babel": "^5.8.29",
-    "babel-eslint": "^4.1.3",
+    "babel-cli": "^6.3.17",
+    "babel-core": "^6.5.2",
+    "babel-eslint": "^5.0.0-beta6",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-register": "^6.3.13",
+    "eslint": "^1.10.3",
+    "eslint-config-etaskr": "^1.0.2",
+    "istanbul": "^1.0.0-alpha",
     "body-parser": "^1.13.3",
     "compression": "^1.5.2",
     "cookie-parser": "^1.3.3",
-    "eslint": "^1.5.0",
-    "eslint-config-etaskr": "git+https://bitbucket.org/etaskr/eslint-config-etaskr.git",
-    "istanbul": "^0.3.20",
     "method-override": "^2.3.0",
-    "mocha": "^2.3.2",
+    "mocha": "^2.3.4",
     "moment": "^2.10.6",
     "should": "^7.1.0",
     "sinon": "^1.16.1",

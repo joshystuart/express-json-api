@@ -9,7 +9,7 @@ class PostController extends AbstractCreateController {
         if (!!req.body.data && !!req.body.data.attributes) {
             next();
         } else {
-            super.setException(400, 'Request failed validation', next);
+            super.setException(400, `Request failed validation`, next);
         }
     }
 
@@ -24,16 +24,27 @@ class PostController extends AbstractCreateController {
         const model = res.locals.model;
 
         if (!!model) {
-            model.create(req.body.data.attributes, function(error, result) {
+            model.create(req.body.data.attributes, (error, result) => {
                 if (error) {
-                    super.setException(500, 'Error on model save: ' + error.toString(), next);
+                    super.setException(500, `Error on model save: ${error.toString()}`, next);
                 }
 
                 res.locals.resource = result;
-                next();
+
+                if (!!res.locals.populate) {
+                    result.populate(res.locals.populate, (populateError) => {
+                        if (error) {
+                            super.setException(404, `Error on model populate: ${populateError.toString()}`, next);
+                        } else {
+                            next();
+                        }
+                    });
+                } else {
+                    next();
+                }
             });
         } else {
-            super.setException(500, 'Model not found.', next);
+            super.setException(500, `Model not found.`, next);
         }
     }
 }

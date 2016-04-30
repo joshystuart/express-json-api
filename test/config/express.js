@@ -1,14 +1,14 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const compress = require('compression');
-const methodOverride = require('method-override');
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import compress from 'compression';
+import methodOverride from 'method-override';
 import ExpressJsonApi from '../../src/express-json-api-service';
-const routesConfig = require('./routes');
+import routesConfig from './routes';
 
-module.exports = function(app) {
+module.exports = (app) => {
     const env = process.env.NODE_ENV || 'development';
     let expressJsonApi; // eslint-disable-line no-unused-vars
 
@@ -25,7 +25,7 @@ module.exports = function(app) {
 
     expressJsonApi = new ExpressJsonApi(app, routesConfig);
 
-    app.use(function(req, res, next) {
+    app.use((req, res, next) => {
         const err = new Error('Not Found');
         err.status = 404;
         next(err);
@@ -35,7 +35,7 @@ module.exports = function(app) {
      * In development environments display 500 errors.
      */
     if (app.get('env') === 'development') {
-        app.use(function(err, req, res) {
+        app.use((err, req, res) => {
             res.status(err.status || 500);
             res.json({
                 message: err.message,
@@ -49,7 +49,7 @@ module.exports = function(app) {
      * In production environments do not display the 500 errors.
      */
 
-    app.use(function(err, req, res) {
+    app.use((err, req, res) => {
         res.status(err.status || 500);
         res.json({
             message: err.message,

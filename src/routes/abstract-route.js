@@ -1,6 +1,7 @@
 /**
  * @author Josh Stuart <joshstuartx@gmail.com>
  */
+import _ from 'lodash';
 
 /**
  * An abstract route class
@@ -16,12 +17,12 @@ class AbstractRoute {
      * @param middleware
      */
     addPathToRouter(path, method, router, config, middleware) {
-        router[method](path, function(req, res, next) {
+        router[method](path, (req, res, next) => {
             // apply target
             this.setRouteConfigOnResponse(config, req, res);
 
             next();
-        }.bind(this), middleware);
+        }, middleware);
     }
 
     /**
@@ -40,6 +41,7 @@ class AbstractRoute {
         res.locals.sanitize = config.sanitize;
         res.locals.search = config.search;
         res.locals.metadata = config.metadata;
+        res.locals.lean = _.isUndefined(config.lean) ? true : !!config.lean;
     }
 }
 

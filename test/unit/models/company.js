@@ -1,17 +1,17 @@
-const Company = require('../../models/company');
-const companies = require('../../fixtures/companies.json');
-require('should');
+import Company from '../../models/company';
+import companies from '../../fixtures/companies.json';
+import 'should';
 
-describe('Models - Company', function() {
-    before(function(done) {
+describe('Models - Company', () => {
+    before((done) => {
         done();
     });
 
-    after(function(done) {
+    after((done) => {
         done();
     });
 
-    it('should contain all valid company fields', function(done) {
+    it('should contain all valid company fields', (done) => {
         const company = new Company(companies[0]);
 
         company['created-on'].should.eql(new Date('2015-10-22T02:54:12.657Z'));

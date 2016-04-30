@@ -1,28 +1,28 @@
-require('should');
-const sinon = require('sinon');
-const db = require('../../utils/db');
-const User = require('../../models/user');
-const post = require('../../../src/controllers/post-controller');
+import 'should';
+import sinon from 'sinon';
+import db from '../../utils/db';
+import User from '../../models/user';
+import * as post from '../../../src/controllers/post-controller';
 
-describe('Unit Tests', function() {
-    describe('Controllers', function() {
-        describe('Post', function() {
-            before(function(done) {
+describe('Unit Tests', () => {
+    describe('Controllers', () => {
+        describe('Post', () => {
+            before((done) => {
                 db.connect().
-                then(function() {
+                then(() => {
                     done();
                 });
             });
 
-            after(function(done) {
+            after((done) => {
                 db.removeAll(User).
-                then(function() {
+                then(() => {
                     db.disconnect();
                     done();
                 });
             });
 
-            it('should `validate` with correct params then call next()', function(done) {
+            it('should `validate` with correct params then call next()', (done) => {
                 const req = {
                     body: {
                         data: {
@@ -44,7 +44,7 @@ describe('Unit Tests', function() {
                 done();
             });
 
-            it('should `validate` with missing data.attributes then call next(err)', function(done) {
+            it('should `validate` with missing data.attributes then call next(err)', (done) => {
                 const req = {
                     body: {
                         data: {}
@@ -56,7 +56,7 @@ describe('Unit Tests', function() {
 
                 post.validate(req, res, next);
 
-                const calledWithErrors = next.calledWithMatch(function(err) {
+                const calledWithErrors = next.calledWithMatch((err) => {
                     return typeof(err) !== 'undefined' && err.status === 400;
                 });
 
@@ -65,7 +65,7 @@ describe('Unit Tests', function() {
                 done();
             });
 
-            it('should `create` then insert a new record and pass results', function(done) {
+            it('should `create` then insert a new record and pass results', (done) => {
                 const req = {
                     body: {
                         data: {
@@ -82,7 +82,7 @@ describe('Unit Tests', function() {
                     }
                 };
 
-                const next = function() {
+                const next = () => {
                     res.locals.resource['first-name'].should.be.equal('Arnold');
                     done();
                 };
@@ -90,7 +90,7 @@ describe('Unit Tests', function() {
                 post.create(req, res, next);
             });
 
-            it('should `serialize` then transform response', function(done) {
+            it('should `serialize` then transform response', (done) => {
                 const req = {};
                 const res = {
                     locals: {
@@ -102,7 +102,7 @@ describe('Unit Tests', function() {
                             _id: '562f20dae5170edf1ca31b0f'
                         },
                         mapper: {
-                            serialize: function(model) {
+                            serialize: (model) => {
                                 return {
                                     name: {
                                         first: model['first-name'],
@@ -119,7 +119,7 @@ describe('Unit Tests', function() {
                     }
                 };
 
-                const next = function() {
+                const next = () => {
                     const resource = res.locals.resource;
                     resource.name.first.should.be.equal('Neil');
                     resource.name.last.should.be.equal('Armstrong');
@@ -129,7 +129,7 @@ describe('Unit Tests', function() {
                 post.serialize(req, res, next);
             });
 
-            it('should `render` then return response object in json', function(done) {
+            it('should `render` then return response object in json', (done) => {
                 const req = {};
                 const res = {
                     locals: {
@@ -141,13 +141,13 @@ describe('Unit Tests', function() {
                             _id: '562f20dae5170edf1ca31b0f'
                         }
                     },
-                    json: function(response) {
+                    json: (response) => {
                         response.meta.page.total.should.be.equal(1);
                         response.data.username.should.be.equal('neilastronaut');
                         done();
                     }
                 };
-                const next = function() {
+                const next = () => {
                 };
 
                 post.render(req, res, next);

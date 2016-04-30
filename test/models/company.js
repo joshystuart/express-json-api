@@ -14,7 +14,7 @@ function Company() {
     });
 
     // prior to save do this
-    CompanySchema.pre('save', function(next) {
+    CompanySchema.pre('save', (next) => {
         if (!_.isDate(this['created-on'])) {
             this['created-on'] = moment();
         }

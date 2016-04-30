@@ -9,7 +9,7 @@ import logger from '../utils/logger.js';
  */
 class AbstractController {
     static setModelNotFoundException(next) {
-        this.setException(500, 'Target Model Not Found', next);
+        this.setException(500, `Target Model Not Found`, next);
     }
 
     static setException(status, message, next) {
@@ -37,7 +37,7 @@ class AbstractController {
 
             // if we have multiple resources
             if (!!res.locals.resources) {
-                _.forEach(res.locals.resources, function(model) {
+                _.forEach(res.locals.resources, (model) => {
                     serializedResults.push(mapper.serialize(model));
                 });
 
@@ -53,6 +53,17 @@ class AbstractController {
                 next();
             }
         } else {
+            // if it's not a lean query we have to convert all resources back to objects.
+            if (!res.locals.lean) {
+                if (!!res.locals.resources && res.locals.resources.length > 0 && !!res.locals.resources[0].toObject) {
+                    res.locals.resources = _.map(res.locals.resources, (resource) => {
+                        return resource.toObject();
+                    });
+                } else if (!!res.locals.resource && !!res.locals.resource.toObject) {
+                    res.locals.resource = res.locals.resource.toObject();
+                }
+            }
+
             next();
         }
     }

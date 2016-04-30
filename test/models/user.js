@@ -27,16 +27,16 @@ function User() {
     });
 
     // prior to save do this
-    UserSchema.pre('save', function(next) {
+    UserSchema.pre('save', (next) => {
         if (!_.isDate(this['created-on'])) {
             this['created-on'] = moment();
         }
         next();
     });
 
-    UserSchema.methods.getFullName = function() {
+    UserSchema.virtual('full-name').get(function() {
         return this['first-name'] + ' ' + this['last-name'];
-    };
+    });
 
     return mongoose.model('User', UserSchema);
 }
