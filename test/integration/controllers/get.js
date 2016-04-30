@@ -64,6 +64,7 @@ describe('Integration Tests', () => {
                 end((err, res) => {
                     should.not.exist(err);
 
+                    // metadata
                     res.body.meta.should.have.ownProperty('page');
                     res.body.meta.page.total.should.be.exactly(1);
                     res.body.meta.page.offset.should.be.exactly(1);
@@ -72,6 +73,17 @@ describe('Integration Tests', () => {
                     // serialized data
                     res.body.data.name.first.should.be.exactly('Sergey');
                     res.body.data.name.last.should.be.exactly('Brin');
+                    res.body.data['full-name'].should.be.exactly('Sergey Brin');
+                    res.body.data.address.line1.should.be.exactly('345 Spear Street');
+                    res.body.data.address.city.should.be.exactly('San Francisco');
+                    res.body.data.address.state.should.be.exactly('CA');
+                    res.body.data.address.postcode.should.be.exactly('94105');
+                    res.body.data.address.country.should.be.exactly('USA');
+
+                    // populated data
+                    res.body.data.company['legal-name'].should.be.exactly('Alphabet Inc.');
+                    res.body.data.company.name.should.be.exactly('Google');
+
                     done();
                 });
             });

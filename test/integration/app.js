@@ -3,6 +3,7 @@
  */
 import q from 'q';
 import express from 'express';
+import mongoose from 'mongoose';
 import config from '../config/config';
 import logger from '../../src/utils/logger';
 
@@ -17,6 +18,17 @@ class App {
         this._isActive = false;
         this._app = express();
         require('../config/express')(this._app, config);
+
+        mongoose.set('debug', function(coll, method, query, doc, options) {
+            const log = {
+                coll: coll,
+                method: method,
+                query: query,
+                doc: doc,
+                options: options
+            };
+            logger.info(`Mongoose:`, log);
+        });
     }
 
     /**

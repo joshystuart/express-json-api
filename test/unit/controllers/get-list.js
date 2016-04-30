@@ -114,6 +114,7 @@ describe('Unit Tests', () => {
                 const res = {
                     locals: {
                         model: User,
+                        lean: true,
                         query: {
                             count: (cb) => {
                                 cb(null, total);
@@ -122,6 +123,9 @@ describe('Unit Tests', () => {
                                 return this;
                             },
                             limit: function() {
+                                return this;
+                            },
+                            lean: function() {
                                 return this;
                             }
                         }
@@ -141,6 +145,7 @@ describe('Unit Tests', () => {
                 const req = {};
                 const res = {
                     locals: {
+                        lean: true,
                         page: {
                             total: 1
                         },

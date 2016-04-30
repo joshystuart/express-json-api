@@ -25,8 +25,6 @@ class GetListController extends AbstractReadController {
                 res.locals.query = res.locals.query.populate(res.locals.populate);
             }
 
-            res.locals.query.lean();
-
             next();
         } else {
             super.setModelNotFoundException(next);
@@ -163,6 +161,9 @@ class GetListController extends AbstractReadController {
         const resQuery = res.locals.query;
 
         if (!!resQuery) {
+            // we always set the paging query to lean because we want it fast.
+            resQuery.lean();
+
             if (!req.query.page) {
                 req.query.page = {};
             }
@@ -209,14 +210,17 @@ class GetListController extends AbstractReadController {
         const resQuery = res.locals.query;
 
         if (!!resQuery) {
-            resQuery.lean();
-            resQuery.exec('find', (err, results) => {
-                if (err) {
-                    next(err);
-                } else {
-                    res.locals.resources = results;
-                    next();
-                }
+            resQuery.lean(res.locals.lean);
+
+            logger.info(`Performing query`);
+
+            resQuery.exec('find').
+            then((results)=> {
+                res.locals.resources = results;
+                next();
+            }).
+            catch((err) => {
+                next(err);
             });
         } else {
             super.setModelNotFoundException(next);

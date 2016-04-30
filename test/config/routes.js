@@ -19,6 +19,7 @@ module.exports = {
                 get: controllers.get.default,
                 post: controllers.post.default
             },
+            lean: false,
             search: {
                 active: true,
                 fields: ['first-name']

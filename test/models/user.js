@@ -34,9 +34,9 @@ function User() {
         next();
     });
 
-    UserSchema.methods.getFullName = () => {
+    UserSchema.virtual('full-name').get(function() {
         return this['first-name'] + ' ' + this['last-name'];
-    };
+    });
 
     return mongoose.model('User', UserSchema);
 }

@@ -53,6 +53,17 @@ class AbstractController {
                 next();
             }
         } else {
+            // if it's not a lean query we have to convert all resources back to objects.
+            if (!res.locals.lean) {
+                if (!!res.locals.resources && res.locals.resources.length > 0 && !!res.locals.resources[0].toObject) {
+                    res.locals.resources = _.map(res.locals.resources, (resource) => {
+                        return resource.toObject();
+                    });
+                } else if (!!res.locals.resource && !!res.locals.resource.toObject) {
+                    res.locals.resource = res.locals.resource.toObject();
+                }
+            }
+
             next();
         }
     }

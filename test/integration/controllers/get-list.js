@@ -64,9 +64,11 @@ describe('Integration Tests', () => {
                 expect(200).
                 end((err, res) => {
                     should.not.exist(err);
-
                     res.body.data.length.should.be.exactly(5);
                     res.body.meta.should.have.ownProperty('page');
+                    res.body.meta.page.limit.should.be.exactly(20);
+                    res.body.meta.page.offset.should.be.exactly(0);
+                    res.body.meta.page.total.should.be.exactly(5);
                     done();
                 });
             });
@@ -99,6 +101,7 @@ describe('Integration Tests', () => {
                         if (user.id === '562d8ac45e5d77d80c478065') {
                             user.name.first.should.be.exactly('Sergey');
                             user.name.last.should.be.exactly('Brin');
+                            user['full-name'].should.be.exactly('Sergey Brin');
                             user.company.name.should.be.exactly('Google');
                             user.company['legal-name'].should.be.exactly('Alphabet Inc.');
                             done();
@@ -118,6 +121,7 @@ describe('Integration Tests', () => {
                     res.body.data.length.should.be.exactly(1);
                     res.body.data[0].name.first.should.be.exactly('Elon');
                     res.body.data[0].name.last.should.be.exactly('Musk');
+                    res.body.data[0]['full-name'].should.be.exactly('Elon Musk');
                     done();
                 });
             });

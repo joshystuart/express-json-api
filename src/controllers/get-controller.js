@@ -2,6 +2,7 @@
  * @author Josh Stuart <joshstuartx@gmail.com>.
  */
 import AbstractReadController from './abstract-read-controller.js';
+import logger from '../utils/logger.js';
 
 class GetController extends AbstractReadController {
     /**
@@ -19,6 +20,12 @@ class GetController extends AbstractReadController {
             if (!!res.locals.id && !!req.params[res.locals.id]) {
                 criteria[res.locals.id] = req.params[res.locals.id];
                 res.locals.query = res.locals.model.findOne(criteria);
+
+                if (!!res.locals.populate) {
+                    logger.info(`Populating model with the following fields: ${res.locals.populate}`);
+                    res.locals.query = res.locals.query.populate(res.locals.populate);
+                }
+
                 next();
             } else {
                 super.setException(400, `Incorrect Parameter`, next);
@@ -39,7 +46,8 @@ class GetController extends AbstractReadController {
         const resQuery = res.locals.query;
 
         if (!!resQuery) {
-            resQuery.lean();
+            resQuery.lean(res.locals.lean);
+
             resQuery.exec('findOne', (err, result) => {
                 if (err) {
                     next(err);
