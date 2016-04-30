@@ -1,7 +1,7 @@
 {
   "name": "express-json-api",
   "description": "The quickest way to create a RESTful api from your mongoose models using the express router and jsonapi.org standards.",
-  "version": "0.0.9-alpha.2",
+  "version": "0.0.9",
   "main": "./lib/index.js",
   "author": "Josh Stuart <joshstuartx@gmail.com>",
   "keywords": [

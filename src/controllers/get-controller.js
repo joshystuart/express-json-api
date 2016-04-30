@@ -48,15 +48,16 @@ class GetController extends AbstractReadController {
         if (!!resQuery) {
             resQuery.lean(res.locals.lean);
 
-            resQuery.exec('findOne', (err, result) => {
-                if (err) {
-                    next(err);
-                } else if (!result) {
+            resQuery.exec('findOne').
+            then((result)=> {
+                if (!result) {
                     super.setException(404, `Resource not found`, next);
                 } else {
                     res.locals.resource = result;
                     next();
                 }
+            }, (err) => {
+                next(err);
             });
         } else {
             super.setModelNotFoundException(next);

@@ -162,7 +162,7 @@ class GetListController extends AbstractReadController {
 
         if (!!resQuery) {
             // we always set the paging query to lean because we want it fast.
-            resQuery.lean();
+            resQuery.lean(true);
 
             if (!req.query.page) {
                 req.query.page = {};
@@ -218,8 +218,7 @@ class GetListController extends AbstractReadController {
             then((results)=> {
                 res.locals.resources = results;
                 next();
-            }).
-            catch((err) => {
+            }, (err) => {
                 next(err);
             });
         } else {
@@ -232,6 +231,7 @@ class GetListController extends AbstractReadController {
      *
      * @param req
      * @param res
+     * @param next
      */
     static render(req, res, next) {
         const resources = res.locals.resources;
